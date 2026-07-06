@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>我的音乐主页 - 蒋昊熹</title>
+<style>
+:root {
+  --bg: #121214;
+  --bg-card: #1c1c1e;
+  --bg-elevated: #242426;
+  --text: #f5f5f7;
+  --text-secondary: #98989d;
+  --accent: #fc3c44;
+  --accent-glow: rgba(252,60,68,0.25);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 32px;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
+
+/* Back Button */
+.back-bar {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  background: rgba(18,18,20,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.15); }
+.back-btn svg { width: 20px; height: 20px; }
+.back-title {
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Profile Header */
+.profile-header {
+  padding: 16px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.profile-avatar {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 24px var(--accent-glow);
+}
+.profile-avatar.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.profile-avatar.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+.profile-avatar.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
+.profile-avatar.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.profile-avatar.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
+.profile-avatar.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+.profile-avatar.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
+.profile-avatar.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
+
+.profile-avatar span {
+  font-size: 36px;
+  font-weight: 800;
+  opacity: 0.5;
+  color: #fff;
+}
+.profile-info h2 {
+  font-size: 24px; font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.profile-info .profile-bio {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Stats */
+.stats-row {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+.stat-item .stat-num {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.stat-item .stat-label {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Section */
+.music-section {
+  padding: 0 20px 8px;
+}
+.music-section h3 {
+  font-size: 16px; font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+/* Genre Tags */
+.genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+.genre-tag {
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+  cursor: default;
+}
+.genre-tag:hover { background: var(--bg-elevated); }
+
+/* Recent Songs */
+.recent-list {
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.recent-item:hover { background: var(--bg-elevated); }
+.recent-cover {
+  width: 48px; height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+}
+.recent-cover.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.recent-cover.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+.recent-cover.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
+.recent-cover.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.recent-cover.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
+.recent-cover.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+.recent-cover.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
+.recent-cover.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
+
+.recent-body { flex:1; min-width:0; }
+.recent-body .recent-name {
+  font-size: 14px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.recent-body .recent-artist {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 2px;
+}
+.recent-time {
+  font-size: 11px; color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (min-width: 600px) {
+  .profile-header { padding: 16px 40px 0; }
+  .profile-avatar { width: 110px; height: 110px; }
+  .profile-info h2 { font-size: 30px; }
+  .stats-row { padding: 20px 40px; }
+  .music-section { padding: 0 40px 8px; }
+  .genre-tags { padding: 0 40px 20px; }
+  .recent-list { padding: 0 40px 20px; }
+  .back-bar { padding: 16px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Back Bar -->
+<div class="back-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="back-title">我的主页</span>
+</div>
+
+<!-- PLACEHOLDER: 搜索 REPLACE_PROFILE_ 批量替换个人信息 -->
+
+<!-- Profile Header -->
+<div class="profile-header">
+  <div class="profile-avatar g1">
+    <span>&#9835;</span>
+  </div>
+  <div class="profile-info">
+    <h2>REPLACE_PROFILE_USERNAME</h2>
+    <div class="profile-bio">REPLACE_PROFILE_BIO</div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-item">
+    <div class="stat-num">REPLACE_PROFILE_SONGS</div>
+    <div class="stat-label">歌曲</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">REPLACE_PROFILE_FOLLOWERS</div>
+    <div class="stat-label">粉丝</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">REPLACE_PROFILE_FOLLOWING</div>
+    <div class="stat-label">关注</div>
+  </div>
+</div>
+
+<!-- Favorite Genres -->
+<div class="music-section">
+  <h3>常听曲风</h3>
+</div>
+<div class="genre-tags">
+  <!-- PLACEHOLDER: 替换 REPLACE_GENRE_N 为你的音乐风格 -->
+  <span class="genre-tag"># REPLACE_GENRE_1</span>
+  <span class="genre-tag"># REPLACE_GENRE_2</span>
+  <span class="genre-tag"># REPLACE_GENRE_3</span>
+  <span class="genre-tag"># REPLACE_GENRE_4</span>
+  <span class="genre-tag"># REPLACE_GENRE_5</span>
+</div>
+
+<!-- Recent Plays -->
+<div class="music-section">
+  <h3>最近播放</h3>
+</div>
+<div class="recent-list">
+  <!-- PLACEHOLDER: 替换 REPLACE_RECENT_N 为最近听的歌曲 -->
+
+  <div class="recent-item">
+    <div class="recent-cover g1"><span>&#9835;</span></div>
+    <div class="recent-body">
+      <div class="recent-name">REPLACE_RECENT_1_NAME</div>
+      <div class="recent-artist">REPLACE_RECENT_1_ARTIST</div>
+    </div>
+    <div class="recent-time">REPLACE_RECENT_1_TIME</div>
+  </div>
+
+  <div class="recent-item">
+    <div class="recent-cover g2"><span>&#9835;</span></div>
+    <div class="recent-body">
+      <div class="recent-name">REPLACE_RECENT_2_NAME</div>
+      <div class="recent-artist">REPLACE_RECENT_2_ARTIST</div>
+    </div>
+    <div class="recent-time">REPLACE_RECENT_2_TIME</div>
+  </div>
+
+  <div class="recent-item">
+    <div class="recent-cover g3"><span>&#9835;</span></div>
+    <div class="recent-body">
+      <div class="recent-name">REPLACE_RECENT_3_NAME</div>
+      <div class="recent-artist">REPLACE_RECENT_3_ARTIST</div>
+    </div>
+    <div class="recent-time">REPLACE_RECENT_3_TIME</div>
+  </div>
+
+  <div class="recent-item">
+    <div class="recent-cover g4"><span>&#9835;</span></div>
+    <div class="recent-body">
+      <div class="recent-name">REPLACE_RECENT_4_NAME</div>
+      <div class="recent-artist">REPLACE_RECENT_4_ARTIST</div>
+    </div>
+    <div class="recent-time">REPLACE_RECENT_4_TIME</div>
+  </div>
+
+  <div class="recent-item">
+    <div class="recent-cover g5"><span>&#9835;</span></div>
+    <div class="recent-body">
+      <div class="recent-name">REPLACE_RECENT_5_NAME</div>
+      <div class="recent-artist">REPLACE_RECENT_5_ARTIST</div>
+    </div>
+    <div class="recent-time">REPLACE_RECENT_5_TIME</div>
+  </div>
+</div>
+
+</body>
+</html>

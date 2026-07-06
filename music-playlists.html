@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>收藏歌单 - 蒋昊熹</title>
+<style>
+:root {
+  --bg: #121214;
+  --bg-card: #1c1c1e;
+  --bg-elevated: #242426;
+  --text: #f5f5f7;
+  --text-secondary: #98989d;
+  --accent: #fc3c44;
+  --accent-glow: rgba(252,60,68,0.25);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 32px;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
+
+/* Back Button */
+.back-bar {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  background: rgba(18,18,20,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.15); }
+.back-btn svg { width: 20px; height: 20px; }
+.back-title {
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Page Header */
+.page-header {
+  padding: 16px 24px 4px;
+}
+.page-header h2 {
+  font-size: 28px; font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.page-header p {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Playlist Grid */
+.playlist-grid {
+  padding: 8px 20px 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.playlist-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.playlist-card:hover { transform: scale(1.03); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+
+.playlist-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.playlist-cover::after {
+  content: '';
+  position: absolute; inset:0;
+  background: linear-gradient(transparent 55%, rgba(0,0,0,0.7));
+}
+.playlist-cover span {
+  position: relative; z-index:1;
+  font-size: 14px; font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.playlist-info {
+  padding: 12px 14px 14px;
+}
+.playlist-info .pl-name {
+  font-size: 14px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.playlist-info .pl-count {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
+.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
+.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
+.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
+
+/* Responsive */
+@media (min-width: 600px) {
+  .playlist-grid { padding: 8px 40px 20px; grid-template-columns: repeat(4, 1fr); }
+  .page-header { padding: 16px 40px 4px; }
+  .back-bar { padding: 16px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Back Bar -->
+<div class="back-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="back-title">收藏歌单</span>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <h2>收藏歌单</h2>
+  <p><!-- PLACEHOLDER: 替换为你的歌单描述 -->收藏的歌单与专辑</p>
+</div>
+
+<!-- Playlist Grid -->
+<div class="playlist-grid">
+  <!-- PLACEHOLDER: 替换每个歌单/专辑的名称和歌曲数量。搜索 REPLACE_PLAYLIST_ 批量替换 -->
+
+  <div class="playlist-card">
+    <div class="playlist-cover g1"><span>REPLACE_PLAYLIST_1_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_1_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_1_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g2"><span>REPLACE_PLAYLIST_2_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_2_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_2_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g3"><span>REPLACE_PLAYLIST_3_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_3_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_3_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g4"><span>REPLACE_PLAYLIST_4_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_4_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_4_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g5"><span>REPLACE_PLAYLIST_5_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_5_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_5_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g6"><span>REPLACE_PLAYLIST_6_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_6_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_6_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g7"><span>REPLACE_PLAYLIST_7_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_7_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_7_COUNT 首</div>
+    </div>
+  </div>
+
+  <div class="playlist-card">
+    <div class="playlist-cover g8"><span>REPLACE_PLAYLIST_8_NAME</span></div>
+    <div class="playlist-info">
+      <div class="pl-name">REPLACE_PLAYLIST_8_NAME</div>
+      <div class="pl-count">REPLACE_PLAYLIST_8_COUNT 首</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
