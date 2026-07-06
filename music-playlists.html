@@ -143,12 +143,87 @@ body {
   .page-header { padding: 16px 40px 4px; }
   .back-bar { padding: 16px 32px; }
 }
+
+
+/* ── Liquid Glass System ── */
+.lg-glass, .lg-nav, .lg-card, .lg-item {
+  position: relative;
+  isolation: isolate;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  filter: url(#glass-distortion);
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+.lg-glass::before, .lg-nav::before, .lg-card::before, .lg-item::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none; border-radius: inherit;
+}
+.lg-glass::after, .lg-nav::after, .lg-card::after, .lg-item::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.35), inset -1px -1px 1px rgba(255,255,255,0.1);
+  border-radius: inherit; pointer-events: none;
+}
+.lg-glass > *, .lg-nav > *, .lg-card > *, .lg-item > * {
+  position: relative; z-index: 2;
+}
+
+/* Nav bar */
+.lg-nav {
+  border-radius: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(18,18,20,0.55) !important;
+}
+
+/* Cards */
+.lg-card {
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.04);
+  overflow: visible;
+}
+.lg-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45), 0 0 50px rgba(255,255,255,0.08);
+}
+
+/* List items */
+.lg-item {
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  overflow: visible;
+}
+.lg-item:hover { filter: url(#glass-distortion) brightness(1.08); }
+
+/* Modal */
+.lg-modal {
+  position: relative; overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  filter: url(#glass-distortion);
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+}
+.lg-modal::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: rgba(28,28,30,0.82);
+  pointer-events: none;
+}
+.lg-modal::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  box-shadow: inset 0 2px 2px rgba(255,255,255,0.18), inset 0 -1px 1px rgba(0,0,0,0.25);
+  border-radius: inherit; pointer-events: none;
+}
+.lg-modal > * { position: relative; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-glass, .lg-nav, .lg-card, .lg-item { transition: none; }
+}
 </style>
 </head>
 <body>
 
 <!-- Back Bar -->
-<div class="back-bar">
+<div class="back-bar lg-nav">
   <button class="back-btn" onclick="history.back()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
@@ -163,7 +238,7 @@ body {
 
 <!-- Playlist Grid -->
   <div class="playlist-grid">
-    <a class="playlist-card" href="https://music.163.com/#/album?id=34818182" target="_blank">
+    <a class="playlist-card lg-card" href="https://music.163.com/#/album?id=34818182" target="_blank">
       <div class="playlist-cover" style="background: url(https://p1.music.126.net/6-TgBhtH2gK2rA2G582Fpg==/109951167817024864.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>Blonde</span></div>
       <div class="playlist-info">
         <div class="pl-name">Blonde</div>
@@ -220,6 +295,22 @@ body {
       </div>
     </a>
   </div>
+
+
+<svg style="display:none"><filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+<feTurbulence type="fractalNoise" baseFrequency="0.015 0.015" numOctaves="2" seed="3" result="turbulence"/>
+<feComponentTransfer in="turbulence" result="mapped">
+<feFuncR type="gamma" amplitude="1.2" exponent="8" offset="0.45"/>
+<feFuncG type="gamma" amplitude="0" exponent="1" offset="0"/>
+<feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5"/>
+</feComponentTransfer>
+<feGaussianBlur in="turbulence" stdDeviation="2.5" result="softMap"/>
+<feSpecularLighting in="softMap" surfaceScale="4" specularConstant="0.8" specularExponent="80" lighting-color="white" result="specLight">
+<fePointLight x="-200" y="-200" z="250"/>
+</feSpecularLighting>
+<feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage"/>
+<feDisplacementMap in="SourceGraphic" in2="softMap" scale="45" xChannelSelector="R" yChannelSelector="G"/>
+</filter></svg>
 
 </body>
 </html>
