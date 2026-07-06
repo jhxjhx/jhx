@@ -108,6 +108,9 @@ body {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   animation: fadeUp 0.5s ease-out both;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 .music-card:hover {
   transform: scale(1.03);
@@ -300,34 +303,34 @@ body {
     <span>查看全部 &rsaquo;</span>
   </div>
   <div class="music-grid">
-    <div class="music-card">
-      <div class="music-cover g1"><span>最近播放</span></div>
+    <a class="music-card" href="https://music.163.com/#/song?id=YOUR_SONG_ID_1" target="_blank" data-song-id="YOUR_SONG_ID_1" onclick="return openMusic(this)">
+      <div class="music-cover g1"><span>⭐ 收藏歌曲</span></div>
       <div class="music-info">
-        <div class="title">最近播放</div>
-        <div class="sub">32 首歌曲</div>
+        <div class="title">请替换为你的歌曲名</div>
+        <div class="sub">请在代码中搜索 YOUR_SONG_ID_1 替换</div>
       </div>
-    </div>
-    <div class="music-card">
-      <div class="music-cover g2"><span>收藏歌单</span></div>
+    </a>
+    <a class="music-card" href="https://music.163.com/#/song?id=YOUR_SONG_ID_2" target="_blank" data-song-id="YOUR_SONG_ID_2" onclick="return openMusic(this)">
+      <div class="music-cover g2"><span>⭐ 收藏歌曲</span></div>
       <div class="music-info">
-        <div class="title">收藏歌单</div>
-        <div class="sub">18 个歌单</div>
+        <div class="title">请替换为你的歌曲名</div>
+        <div class="sub">请在代码中搜索 YOUR_SONG_ID_2 替换</div>
       </div>
-    </div>
-    <div class="music-card">
-      <div class="music-cover g5"><span>最爱艺人</span></div>
+    </a>
+    <a class="music-card" href="https://music.163.com/#/song?id=YOUR_SONG_ID_3" target="_blank" data-song-id="YOUR_SONG_ID_3" onclick="return openMusic(this)">
+      <div class="music-cover g5"><span>⭐ 收藏歌曲</span></div>
       <div class="music-info">
-        <div class="title">最爱艺人</div>
-        <div class="sub">12 位艺人</div>
+        <div class="title">请替换为你的歌曲名</div>
+        <div class="sub">请在代码中搜索 YOUR_SONG_ID_3 替换</div>
       </div>
-    </div>
-    <div class="music-card">
-      <div class="music-cover g7"><span>每周推荐</span></div>
+    </a>
+    <a class="music-card" href="https://music.163.com/#/song?id=YOUR_SONG_ID_4" target="_blank" data-song-id="YOUR_SONG_ID_4" onclick="return openMusic(this)">
+      <div class="music-cover g7"><span>⭐ 收藏歌曲</span></div>
       <div class="music-info">
-        <div class="title">每周推荐</div>
-        <div class="sub">周一更新</div>
+        <div class="title">请替换为你的歌曲名</div>
+        <div class="sub">请在代码中搜索 YOUR_SONG_ID_4 替换</div>
       </div>
-    </div>
+    </a>
   </div>
 </section>
 
@@ -444,6 +447,28 @@ window.addEventListener('scroll', function() {
     else item.classList.remove('active');
   });
 });
+// 网易云音乐外链跳转：手机端尝试启动APP，失败则用网页版
+function openMusic(el) {
+  var ua = navigator.userAgent.toLowerCase();
+  var isMobile = /android|iphone|ipad|ipod/.test(ua);
+  if (isMobile) {
+    var songId = el.getAttribute('data-song-id');
+    // 尝试用 orpheus:// 协议打开网易云APP
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = 'orpheus://song/' + songId;
+    document.body.appendChild(iframe);
+    // 800ms后如果APP未打开，跳转网页版
+    setTimeout(function() {
+      document.body.removeChild(iframe);
+      window.location.href = el.href;
+    }, 800);
+    return false;
+  }
+  // 桌面端直接打开网页版
+  window.open(el.href, '_blank');
+  return false;
+}
 </script>
 
 </body>
