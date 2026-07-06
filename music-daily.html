@@ -14,179 +14,262 @@
   --accent: #fc3c44;
   --accent-glow: rgba(252,60,68,0.25);
   --radius: 14px;
-  --radius-sm: 10px;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  background: var(--bg);
+  background: #000;
   color: var(--text);
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 32px;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 ::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
 
+/* Background layer: blurred cover with floating animation */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+}
+.bg-blur {
+  position: absolute;
+  inset: -80px;
+  background: var(--cover-url) center/cover;
+  filter: blur(70px) brightness(0.35) saturate(1.2);
+  animation: bgFloat 14s ease-in-out infinite alternate;
+}
+.bg-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%);
+}
+@keyframes bgFloat {
+  0%   { transform: scale(1) translate(0, 0); }
+  50%  { transform: scale(1.06) translate(-1.5%, 0.5%); }
+  100% { transform: scale(1.1) translate(1%, -1%); }
+}
+
+/* Main content */
+.content {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 24px 32px;
+}
+
 /* Back Button */
 .back-bar {
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  background: rgba(18,18,20,0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 100;
+  width: 100%; max-width: 420px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 0 24px;
 }
 .back-btn {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: var(--bg-elevated);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text);
   transition: background 0.2s;
 }
-.back-btn:hover { background: rgba(255,255,255,0.15); }
+.back-btn:hover { background: rgba(255,255,255,0.22); }
 .back-btn svg { width: 20px; height: 20px; }
 .back-title {
-  font-size: 20px; font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 17px; font-weight: 600;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
 }
 
-/* Daily Hero */
-.daily-hero {
-  padding: 24px 24px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+/* Cover section */
+.cover-section {
+  display: flex; flex-direction: column; align-items: center;
+  margin-top: 8px;
 }
-.daily-cover {
-  width: 240px; height: 240px;
+.cover-wrap {
+  width: 260px; height: 260px;
   border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 48px rgba(0,0,0,0.5);
-  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+  animation: coverFloat 7s ease-in-out infinite alternate;
+  position: relative;
 }
-.daily-cover span {
-  font-size: 60px;
-  font-weight: 800;
-  opacity: 0.4;
-  color: #fff;
+.cover-wrap img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
-.daily-cover.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-.daily-cover.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
-.daily-cover.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
-.daily-cover.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
-.daily-cover.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
-.daily-cover.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
-.daily-cover.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
-.daily-cover.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
+/* Inner shadow for depth */
+.cover-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  border-radius: inherit; pointer-events: none;
+}
+@keyframes coverFloat {
+  0%   { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-10px) rotate(0.8deg); }
+}
 
-.daily-info h2 {
+/* Song info */
+.song-info {
+  text-align: center; margin-top: 32px;
+  max-width: 320px;
+}
+.song-info h1 {
   font-size: 26px; font-weight: 800;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  line-height: 1.2;
+  margin-bottom: 8px;
 }
-.daily-info .daily-artist {
-  font-size: 16px; color: var(--text-secondary);
+.song-info .artist {
+  font-size: 17px; color: var(--text-secondary);
+  font-weight: 500;
   margin-bottom: 4px;
 }
-.daily-info .daily-album {
+.song-info .album {
   font-size: 14px; color: var(--text-secondary);
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
-/* PLACEHOLDER: 日期标签，替换 REPLACE_DAILY_DATE */
-.daily-date {
+/* Date badge */
+.date-badge {
   margin-top: 20px;
   padding: 6px 16px;
-  background: var(--bg-card);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  display: inline-block;
+  font-size: 12px; color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
-/* Action Buttons */
-.daily-actions {
-  padding: 24px 24px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
+/* Action buttons */
+.actions {
+  display: flex; gap: 12px;
+  margin-top: 28px;
 }
-.daily-btn {
-  padding: 12px 28px;
+.btn {
+  padding: 12px 32px;
   border-radius: 24px;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
+  font-size: 15px; font-weight: 600;
+  border: none; cursor: pointer;
   font-family: inherit;
   transition: transform 0.15s, opacity 0.15s;
+  letter-spacing: 0.3px;
 }
-.daily-btn:active { transform: scale(0.96); }
-.daily-btn.primary {
+.btn:active { transform: scale(0.96); }
+.btn-primary {
   background: var(--accent);
   color: #fff;
 }
-.daily-btn.secondary {
-  background: var(--bg-card);
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text);
 }
-.daily-btn:hover { opacity: 0.85; }
+.btn:hover { opacity: 0.85; }
+
+/* Player section */
+.player-section {
+  margin-top: 32px;
+  width: 100%; max-width: 420px;
+}
+.player-label {
+  font-size: 11px; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 8px; text-align: center;
+  opacity: 0.5;
+}
+.player-box {
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.player-box iframe {
+  display: block; width: 100%; height: 66px;
+  border: none;
+}
+
+/* Fallback link */
+.fallback-link {
+  margin-top: 12px; text-align: center;
+}
+.fallback-link a {
+  font-size: 13px; color: var(--accent);
+  text-decoration: none; opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.fallback-link a:hover { opacity: 1; }
 
 /* Responsive */
 @media (min-width: 600px) {
-  .daily-cover { width: 300px; height: 300px; }
-  .daily-cover span { font-size: 80px; }
-  .daily-hero { padding: 32px 40px 8px; }
-  .back-bar { padding: 16px 32px; }
+  .cover-wrap { width: 300px; height: 300px; }
+  .song-info h1 { font-size: 30px; }
+  .content { padding: 24px 40px 40px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Back Bar -->
-<div class="back-bar">
-  <button class="back-btn" onclick="history.back()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <span class="back-title">每日推荐</span>
+<!-- Floating blurred background -->
+<div class="bg-layer">
+  <div class="bg-blur" style="--cover-url: url(https://p1.music.126.net/vwoE2lBarD6yNzNhYiHYMg==/109951168535489953.jpg);"></div>
+  <div class="bg-overlay"></div>
 </div>
 
-<!-- Daily Song Hero -->
-<div class="daily-hero">
-  <!-- PLACEHOLDER: 替换 REPLACE_DAILY_ 为你的实际内容 -->
-  <div class="daily-cover g1">
-    <span>&#9835;</span>
-  </div>
-  <div class="daily-info">
-    <h2>REPLACE_DAILY_SONG_NAME</h2>
-    <div class="daily-artist">REPLACE_DAILY_ARTIST</div>
-    <div class="daily-album">专辑：REPLACE_DAILY_ALBUM</div>
-  </div>
-  <div class="daily-date">REPLACE_DAILY_DATE</div>
-</div>
+<!-- Main content -->
+<div class="content">
 
-<!-- Action Buttons -->
-<div class="daily-actions">
-  <button class="daily-btn primary">&#9654; 播放</button>
-  <button class="daily-btn secondary">&#9825; 收藏</button>
+  <!-- Back Bar -->
+  <div class="back-bar">
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="back-title">每日推荐</span>
+  </div>
+
+  <!-- Cover -->
+  <div class="cover-section">
+    <div class="cover-wrap">
+      <img src="https://p1.music.126.net/vwoE2lBarD6yNzNhYiHYMg==/109951168535489953.jpg" alt="Album cover">
+    </div>
+  </div>
+
+  <!-- Song info -->
+  <div class="song-info">
+    <h1>Disillusioned</h1>
+    <div class="artist">Daniel Caesar</div>
+    <div class="album">专辑：NEVER ENOUGH (Bonus Version)</div>
+  </div>
+
+  <!-- Date -->
+  <div class="date-badge">2026年7月6日 · 今日推荐</div>
+
+  <!-- Action buttons -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="document.getElementById('player-iframe').contentWindow.postMessage('play', '*')">播放</button>
+    <a class="btn btn-secondary" href="https://music.163.com/#/song?id=2037842125" target="_blank" style="text-decoration:none;">网易云打开</a>
+  </div>
+
+  <!-- Player -->
+  <div class="player-section">
+    <div class="player-label">内置播放器</div>
+    <div class="player-box">
+      <iframe id="player-iframe" src="https://music.163.com/outchain/player?type=2&id=2037842125&auto=0&height=66" frameborder="0"></iframe>
+    </div>
+    <div class="fallback-link">
+      <a href="https://music.163.com/#/song?id=2037842125" target="_blank">如无法播放，点此在网易云音乐中打开</a>
+    </div>
+  </div>
+
 </div>
 
 </body>
