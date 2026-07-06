@@ -6,14 +6,9 @@
 <title>每日推荐 - 蒋昊熹</title>
 <style>
 :root {
-  --bg: #121214;
-  --bg-card: #1c1c1e;
-  --bg-elevated: #242426;
-  --text: #f5f5f7;
-  --text-secondary: #98989d;
+  --text: #fff;
+  --text-secondary: rgba(255,255,255,0.7);
   --accent: #fc3c44;
-  --accent-glow: rgba(252,60,68,0.25);
-  --radius: 14px;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -22,53 +17,41 @@ body {
   background: #000;
   color: var(--text);
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
+/* Full screen video background */
+.bg-video {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
 
-/* Background layer: blurred cover with floating animation */
-.bg-layer {
-  position: fixed; inset: 0; z-index: 0; overflow: hidden;
-}
-.bg-blur {
-  position: absolute;
-  inset: -80px;
-  background: var(--cover-url) center/cover;
-  filter: blur(70px) brightness(0.35) saturate(1.2);
-  animation: bgFloat 14s ease-in-out infinite alternate;
-}
 .bg-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%);
-}
-@keyframes bgFloat {
-  0%   { transform: scale(1) translate(0, 0); }
-  50%  { transform: scale(1.06) translate(-1.5%, 0.5%); }
-  100% { transform: scale(1.1) translate(1%, -1%); }
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0,0,0,0.45);
 }
 
-/* Main content */
-.content {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 24px 32px;
-}
-
-/* Back Button */
+/* Back button */
 .back-bar {
-  width: 100%; max-width: 420px;
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 0 24px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+
 .back-btn {
   width: 36px; height: 36px;
   border-radius: 50%;
@@ -76,200 +59,122 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text);
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
 }
-.back-btn:hover { background: rgba(255,255,255,0.22); }
+
 .back-btn svg { width: 20px; height: 20px; }
+
 .back-title {
-  font-size: 17px; font-weight: 600;
-  letter-spacing: 0.3px;
-  opacity: 0.9;
+  font-size: 17px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* Cover section */
-.cover-section {
-  display: flex; flex-direction: column; align-items: center;
-  margin-top: 8px;
-}
-.cover-wrap {
-  width: 260px; height: 260px;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
-  animation: coverFloat 7s ease-in-out infinite alternate;
-  position: relative;
-}
-.cover-wrap img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
-/* Inner shadow for depth */
-.cover-wrap::after {
-  content: '';
-  position: absolute; inset: 0;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-  border-radius: inherit; pointer-events: none;
-}
-@keyframes coverFloat {
-  0%   { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(-10px) rotate(0.8deg); }
+/* Main content - centered */
+.main-content {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
 }
 
-/* Song info */
-.song-info {
-  text-align: center; margin-top: 32px;
-  max-width: 320px;
-}
-.song-info h1 {
-  font-size: 26px; font-weight: 800;
-  letter-spacing: 0.5px;
+.song-name {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 1px;
   line-height: 1.2;
-  margin-bottom: 8px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  margin-bottom: 12px;
 }
-.song-info .artist {
-  font-size: 17px; color: var(--text-secondary);
+
+.artist {
+  font-size: 16px;
+  color: var(--text-secondary);
   font-weight: 500;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
   margin-bottom: 4px;
 }
-.song-info .album {
-  font-size: 14px; color: var(--text-secondary);
-  opacity: 0.65;
+
+.album {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
+
+/* Play button */
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+  padding: 14px 40px;
+  border-radius: 28px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 24px rgba(252,60,68,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+}
+
+.play-btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(252,60,68,0.5); }
+.play-btn:active { transform: scale(0.97); }
 
 /* Date badge */
 .date-badge {
-  margin-top: 20px;
-  padding: 6px 16px;
+  margin-top: 24px;
+  padding: 5px 14px;
+  border-radius: 16px;
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
-  font-size: 12px; color: var(--text-secondary);
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
 }
 
-/* Action buttons */
-.actions {
-  display: flex; gap: 12px;
-  margin-top: 28px;
-}
-.btn {
-  padding: 12px 32px;
-  border-radius: 24px;
-  font-size: 15px; font-weight: 600;
-  border: none; cursor: pointer;
-  font-family: inherit;
-  transition: transform 0.15s, opacity 0.15s;
-  letter-spacing: 0.3px;
-}
-.btn:active { transform: scale(0.96); }
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-}
-.btn-secondary {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: var(--text);
-}
-.btn:hover { opacity: 0.85; }
-
-/* Player section */
-.player-section {
-  margin-top: 32px;
-  width: 100%; max-width: 420px;
-}
-.player-label {
-  font-size: 11px; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 1.5px;
-  margin-bottom: 8px; text-align: center;
-  opacity: 0.5;
-}
-.player-box {
-  background: rgba(255,255,255,0.04);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.player-box iframe {
-  display: block; width: 100%; height: 66px;
-  border: none;
-}
-
-/* Fallback link */
-.fallback-link {
-  margin-top: 12px; text-align: center;
-}
-.fallback-link a {
-  font-size: 13px; color: var(--accent);
-  text-decoration: none; opacity: 0.7;
-  transition: opacity 0.2s;
-}
-.fallback-link a:hover { opacity: 1; }
-
-/* Responsive */
 @media (min-width: 600px) {
-  .cover-wrap { width: 300px; height: 300px; }
-  .song-info h1 { font-size: 30px; }
-  .content { padding: 24px 40px 40px; }
+  .song-name { font-size: 48px; }
+  .artist { font-size: 18px; }
+  .album { font-size: 14px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Floating blurred background -->
-<div class="bg-layer">
-  <div class="bg-blur" style="--cover-url: url(https://p1.music.126.net/vwoE2lBarD6yNzNhYiHYMg==/109951168535489953.jpg);"></div>
-  <div class="bg-overlay"></div>
+<!-- Full screen background video -->
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="daily-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-overlay"></div>
+
+<!-- Back button -->
+<div class="back-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="back-title">每日推荐</span>
 </div>
 
-<!-- Main content -->
-<div class="content">
-
-  <!-- Back Bar -->
-  <div class="back-bar">
-    <button class="back-btn" onclick="history.back()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <span class="back-title">每日推荐</span>
-  </div>
-
-  <!-- Cover -->
-  <div class="cover-section">
-    <div class="cover-wrap">
-      <img src="https://p1.music.126.net/vwoE2lBarD6yNzNhYiHYMg==/109951168535489953.jpg" alt="Album cover">
-    </div>
-  </div>
-
-  <!-- Song info -->
-  <div class="song-info">
-    <h1>Disillusioned</h1>
-    <div class="artist">Daniel Caesar</div>
-    <div class="album">专辑：NEVER ENOUGH (Bonus Version)</div>
-  </div>
-
-  <!-- Date -->
+<!-- Centered content -->
+<div class="main-content">
+  <div class="song-name">Disillusioned</div>
+  <div class="artist">Daniel Caesar</div>
+  <div class="album">NEVER ENOUGH (Bonus Version)</div>
+  <a class="play-btn" href="https://music.163.com/#/song?id=2037842125" target="_blank">
+    播放
+  </a>
   <div class="date-badge">2026年7月6日 · 今日推荐</div>
-
-  <!-- Action buttons -->
-  <div class="actions">
-    <button class="btn btn-primary" onclick="document.getElementById('player-iframe').contentWindow.postMessage('play', '*')">播放</button>
-    <a class="btn btn-secondary" href="https://music.163.com/#/song?id=2037842125" target="_blank" style="text-decoration:none;">网易云打开</a>
-  </div>
-
-  <!-- Player -->
-  <div class="player-section">
-    <div class="player-label">内置播放器</div>
-    <div class="player-box">
-      <iframe id="player-iframe" src="https://music.163.com/outchain/player?type=2&id=2037842125&auto=0&height=66" frameborder="0"></iframe>
-    </div>
-    <div class="fallback-link">
-      <a href="https://music.163.com/#/song?id=2037842125" target="_blank">如无法播放，点此在网易云音乐中打开</a>
-    </div>
-  </div>
-
 </div>
 
 </body>
