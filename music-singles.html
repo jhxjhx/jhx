@@ -27,6 +27,32 @@ body {
   -webkit-font-smoothing: antialiased;
   padding-bottom: 32px;
   overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Banner Background */
+.bg-banner {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.bg-banner.active { opacity: 1; }
+.bg-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(18,18,20,0.82);
+}
+
+/* Content above banner */
+.page-content {
+  position: relative;
+  z-index: 1;
 }
 
 ::-webkit-scrollbar { width:6px; }
@@ -142,6 +168,11 @@ body {
 </head>
 <body>
 
+<!-- Banner Background -->
+<div class="bg-banner" id="bgBanner"></div>
+
+<div class="page-content">
+
 <!-- Back Bar -->
 <div class="back-bar">
   <button class="back-btn" onclick="history.back()">
@@ -217,5 +248,48 @@ body {
     </a>
   </div>
 
-</body>
+</div>
+
+<script>
+const banner = document.getElementById('bgBanner');
+const items = document.querySelectorAll('.song-item');
+let activeCover = '';
+let ticking = false;
+
+items.forEach(item => {
+  const cover = item.querySelector('.song-cover');
+  const bgUrl = cover.style.background.match(/url\(([^)]+)\)/);
+  if (bgUrl) {
+    item.setAttribute('data-cover', bgUrl[1]);
+  }
+
+  item.addEventListener('mouseenter', () => {
+    const url = item.getAttribute('data-cover');
+    if (url) {
+      activeCover = url;
+      banner.style.backgroundImage = `url(${url})`;
+      banner.classList.add('active');
+    }
+  });
+
+  item.addEventListener('mouseleave', () => {
+    activeCover = '';
+    banner.classList.remove('active');
+    banner.style.backgroundPosition = 'center';
+  });
+});
+
+document.addEventListener('mousemove', e => {
+  if (!activeCover) return;
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      banner.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+</script>
 </html>
