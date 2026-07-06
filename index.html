@@ -1,42 +1,472 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的主页</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #000;
-            color: #eee;
-            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            gap: 40px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 16px 48px;
-            font-size: 1.4rem;
-            color: #fff;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-            letter-spacing: 2px;
-        }
-        .btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的主页</title>
+<style>
+:root {
+  --bg: #121214;
+  --bg-card: #1c1c1e;
+  --bg-elevated: #242426;
+  --text: #f5f5f7;
+  --text-secondary: #98989d;
+  --accent: #fc3c44;
+  --accent-glow: rgba(252,60,68,0.25);
+  --nav-height: 72px;
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(var(--nav-height) + 24px);
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.2); }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes avatar-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.anim-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.anim-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero / Profile */
+.hero {
+  padding: 48px 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  animation: fadeUp 0.7s ease-out;
+}
+.avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fc3c44, #ff6b6b, #fc3c44, #c0392b);
+  background-size: 300% 300%;
+  animation: avatar-shift 4s ease infinite;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 32px;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 24px var(--accent-glow);
+}
+.hero-text h1 {
+  font-size: 28px; font-weight: 700;
+  letter-spacing: 1px;
+}
+.hero-text p {
+  font-size: 14px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Section */
+.section {
+  padding: 8px 24px 28px;
+}
+.section-header {
+  display: flex; align-items:baseline; justify-content:space-between;
+  margin-bottom: 16px;
+}
+.section-header h2 {
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.section-header span {
+  font-size: 13px; color: var(--accent);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.section-header span:hover { opacity:0.7; }
+
+/* Music Grid */
+.music-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.music-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.5s ease-out both;
+}
+.music-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.music-card:nth-child(1) { animation-delay:0s; }
+.music-card:nth-child(2) { animation-delay:0.08s; }
+.music-card:nth-child(3) { animation-delay:0.16s; }
+.music-card:nth-child(4) { animation-delay:0.24s; }
+
+.music-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.music-cover::after {
+  content: '';
+  position: absolute; inset:0;
+  background: linear-gradient(transparent 55%, rgba(0,0,0,0.7));
+}
+.music-cover span {
+  position: relative; z-index:1;
+  font-size: 14px; font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.music-info {
+  padding: 12px 14px 14px;
+}
+.music-info .title {
+  font-size: 14px; font-weight: 600;
+  white-space: nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.music-info .sub {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
+.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
+.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
+.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
+
+/* Task Cards */
+.task-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.task-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex; align-items:center; gap: 14px;
+  transition: transform 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.task-card:hover {
+  background: var(--bg-elevated);
+  transform: translateX(4px);
+}
+.task-card:nth-child(1) { animation: fadeUp 0.5s ease-out 0s both; }
+.task-card:nth-child(2) { animation: fadeUp 0.5s ease-out 0.1s both; }
+.task-card:nth-child(3) { animation: fadeUp 0.5s ease-out 0.2s both; }
+
+.task-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.task-icon.done { background: rgba(39,174,96,0.2); color:#2ecc71; }
+.task-icon.soon { background: rgba(243,156,18,0.2); color:#f39c12; }
+.task-icon.active { background: var(--accent-glow); color:var(--accent); }
+
+.task-body { flex:1; min-width:0; }
+.task-body .task-title { font-size:15px; font-weight:600; }
+.task-body .task-desc { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+.task-meta { font-size:11px; color:var(--text-secondary); white-space:nowrap; }
+
+/* Plan Cards */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.plan-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+}
+.plan-card:nth-child(1) { animation: fadeUp 0.5s ease-out 0s both; }
+.plan-card:nth-child(2) { animation: fadeUp 0.5s ease-out 0.1s both; }
+.plan-card:nth-child(3) { animation: fadeUp 0.5s ease-out 0.2s both; }
+.plan-card:nth-child(4) { animation: fadeUp 0.5s ease-out 0.3s both; }
+
+.plan-card .plan-date {
+  font-size: 11px; color: var(--accent); font-weight:600;
+  text-transform: uppercase; letter-spacing:1px;
+}
+.plan-card .plan-title {
+  font-size: 16px; font-weight: 700; margin-top:6px;
+}
+.plan-card .plan-desc {
+  font-size: 12px; color: var(--text-secondary); margin-top:4px;
+  display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow: hidden;
+}
+.plan-card .plan-bar {
+  position: absolute; bottom:0; left:0; height:3px;
+  border-radius: 0 3px 0 0;
+}
+.plan-bar.p30 { width:30%; background:var(--accent); }
+.plan-bar.p60 { width:60%; background:#f39c12; }
+.plan-bar.p80 { width:80%; background:#2ecc71; }
+.plan-bar.p10 { width:10%; background:var(--accent); }
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed; bottom:0; left:0; right:0;
+  height: var(--nav-height);
+  background: rgba(24,24,26,0.88);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 100;
+}
+.nav-item {
+  display: flex; flex-direction:column; align-items:center; gap:4px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  background: none; border: none;
+  font-family: inherit;
+}
+.nav-item svg {
+  width: 22px; height: 22px;
+  transition: transform 0.2s;
+}
+.nav-item.active { color: var(--text); }
+.nav-item.active svg { transform: scale(1.08); }
+.nav-item:active svg { transform: scale(0.92); }
+
+/* Responsive */
+@media (min-width: 600px) {
+  .hero { padding:56px 40px 24px; }
+  .section { padding:8px 40px 32px; }
+  .music-grid { grid-template-columns: repeat(4,1fr); }
+  .plan-grid { grid-template-columns: repeat(4,1fr); }
+  .avatar { width:100px; height:100px; font-size:42px; }
+  .hero-text h1 { font-size:34px; }
+}
+</style>
 </head>
 <body>
-    <a href="game/" class="btn">幺幺来袭</a>
+
+<!-- Hero / 我 -->
+<section class="hero" id="me">
+  <div class="avatar">J</div>
+  <div class="hero-text">
+    <h1>蒋昊熹</h1>
+    <p>智能制造 2501 · 学号 202503090141</p>
+  </div>
+</section>
+
+<!-- 我的音乐 -->
+<section class="section anim-in" id="music">
+  <div class="section-header">
+    <h2>我的音乐</h2>
+    <span>查看全部 &rsaquo;</span>
+  </div>
+  <div class="music-grid">
+    <div class="music-card">
+      <div class="music-cover g1"><span>最近播放</span></div>
+      <div class="music-info">
+        <div class="title">最近播放</div>
+        <div class="sub">32 首歌曲</div>
+      </div>
+    </div>
+    <div class="music-card">
+      <div class="music-cover g2"><span>收藏歌单</span></div>
+      <div class="music-info">
+        <div class="title">收藏歌单</div>
+        <div class="sub">18 个歌单</div>
+      </div>
+    </div>
+    <div class="music-card">
+      <div class="music-cover g5"><span>最爱艺人</span></div>
+      <div class="music-info">
+        <div class="title">最爱艺人</div>
+        <div class="sub">12 位艺人</div>
+      </div>
+    </div>
+    <div class="music-card">
+      <div class="music-cover g7"><span>每周推荐</span></div>
+      <div class="music-info">
+        <div class="title">每周推荐</div>
+        <div class="sub">周一更新</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 近期任务 -->
+<section class="section anim-in" id="tasks">
+  <div class="section-header">
+    <h2>近期任务</h2>
+    <span>全部 &rsaquo;</span>
+  </div>
+  <div class="task-list">
+    <div class="task-card">
+      <div class="task-icon done">&#10003;</div>
+      <div class="task-body">
+        <div class="task-title">人工智能基础B 期末项目</div>
+        <div class="task-desc">垃圾分类识别系统 - 已提交</div>
+      </div>
+      <div class="task-meta">已完成</div>
+    </div>
+    <div class="task-card">
+      <div class="task-icon active">&#9679;</div>
+      <div class="task-body">
+        <div class="task-title">GitHub Pages 网站搭建</div>
+        <div class="task-desc">个人主页设计与部署</div>
+      </div>
+      <div class="task-meta">进行中</div>
+    </div>
+    <div class="task-card">
+      <div class="task-icon soon">&#9711;</div>
+      <div class="task-body">
+        <div class="task-title">暑期学习计划制定</div>
+        <div class="task-desc">准备下学期课程预习</div>
+      </div>
+      <div class="task-meta">待开始</div>
+    </div>
+  </div>
+</section>
+
+<!-- 近期计划 -->
+<section class="section anim-in" id="plans">
+  <div class="section-header">
+    <h2>近期计划</h2>
+    <span>全部 &rsaquo;</span>
+  </div>
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div class="plan-date">7月第2周</div>
+      <div class="plan-title">完成网站优化</div>
+      <div class="plan-desc">丰富页面内容，添加更多交互功能</div>
+      <div class="plan-bar p60"></div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-date">7月第3周</div>
+      <div class="plan-title">学习 React 基础</div>
+      <div class="plan-desc">跟着教程动手写几个小组件</div>
+      <div class="plan-bar p10"></div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-date">8月</div>
+      <div class="plan-title">搭建个人博客</div>
+      <div class="plan-desc">记录学习笔记和技术心得</div>
+      <div class="plan-bar p10"></div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-date">8月下旬</div>
+      <div class="plan-title">预习新学期课程</div>
+      <div class="plan-desc">重点复习数学和编程基础</div>
+      <div class="plan-bar p10"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="scrollToSection('me')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span>浏览</span>
+  </button>
+  <button class="nav-item" onclick="scrollToSection('music')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+    <span>新发现</span>
+  </button>
+  <button class="nav-item" onclick="scrollToSection('tasks')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span>广播</span>
+  </button>
+  <button class="nav-item" onclick="scrollToSection('plans')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    <span>资料库</span>
+  </button>
+  <button class="nav-item" onclick="scrollToSection('music')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span>搜索</span>
+  </button>
+</nav>
+
+<script>
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.anim-in').forEach(el => observer.observe(el));
+
+// Smooth scroll
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior:'smooth' });
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (event && event.target) {
+    var btn = event.target.closest('.nav-item');
+    if (btn) btn.classList.add('active');
+  }
+}
+
+// Nav highlight on scroll
+var sections = ['me','music','tasks','plans'];
+var navItems = document.querySelectorAll('.nav-item');
+var navMap = { me:0, music:1, tasks:2, plans:3 };
+
+window.addEventListener('scroll', function() {
+  var current = 'me';
+  sections.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < window.innerHeight/2) current = id;
+  });
+  navItems.forEach(function(item, i) {
+    if (i === navMap[current]) item.classList.add('active');
+    else item.classList.remove('active');
+  });
+});
+</script>
+
 </body>
 </html>
