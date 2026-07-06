@@ -275,6 +275,20 @@ body {
   flex-shrink: 0;
 }
 
+
+.toast {
+  position: fixed; z-index: 300;
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+  animation: toastFade 1.8s ease-out forwards;
+}
+@keyframes toastFade {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-60px); }
+}
+
 </style>
 </head>
 <body>
@@ -304,7 +318,7 @@ body {
     <div class="stat-num">2</div>
     <div class="stat-label">粉丝</div>
   </div>
-  <div class="stat-item" onclick="openModal('following')" style="cursor:pointer;">
+  <div class="stat-item" onclick="showToast(event, '无法查看')" style="cursor:pointer;">
     <div class="stat-num">38</div>
     <div class="stat-label">关注</div>
   </div>
@@ -417,6 +431,15 @@ body {
 function openModal(type) {
   document.getElementById('modalTitle').textContent = type === 'fans' ? '粉丝' : '关注';
   document.getElementById('modalOverlay').classList.add('active');
+}
+function showToast(e, msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  toast.style.left = e.clientX + 'px';
+  toast.style.top = e.clientY + 'px';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 1900);
 }
 function closeModal(e) {
   if (e.target === document.getElementById('modalOverlay')) {
