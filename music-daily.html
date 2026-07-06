@@ -116,19 +116,21 @@ body {
   align-items: center;
   gap: 8px;
   margin-top: 40px;
-  padding: 14px 40px;
+  padding: 14px 44px;
   border-radius: 28px;
-  background: var(--accent);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: #fff;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 4px 24px rgba(252,60,68,0.4);
-  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: background 0.2s, transform 0.15s;
   letter-spacing: 0.5px;
 }
 
-.play-btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(252,60,68,0.5); }
+.play-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
 .play-btn:active { transform: scale(0.97); }
 
 /* Date badge */
@@ -172,7 +174,7 @@ body {
   <div class="artist">Daniel Caesar</div>
   <div class="album">NEVER ENOUGH (Bonus Version)</div>
   <a class="play-btn" href="https://music.163.com/#/song?id=2037842125" target="_blank">
-    播放
+    Play
   </a>
   <div class="date-badge">2026年7月6日 · 今日推荐</div>
 </div>
