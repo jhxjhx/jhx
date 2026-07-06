@@ -110,28 +110,44 @@ body {
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* Play button */
-.play-btn {
+/* Liquid Glass Play button */
+.lg-wrapper {
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
   margin-top: 40px;
-  padding: 14px 44px;
+  overflow: hidden;
   border-radius: 28px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 1px solid rgba(255,255,255,0.2);
-  transition: background 0.2s, transform 0.15s;
-  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.35), 0 0 30px rgba(255,255,255,0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
-
-.play-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
-.play-btn:active { transform: scale(0.97); }
+.lg-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 40px rgba(255,255,255,0.1);
+}
+.lg-wrapper:active { transform: scale(0.97); }
+.lg-effect {
+  position: absolute; inset: 0; z-index: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  filter: url(#glass-distortion);
+}
+.lg-tint {
+  position: absolute; inset: 0; z-index: 1;
+  background: rgba(255,255,255,0.12);
+}
+.lg-shine {
+  position: absolute; inset: 0; z-index: 2;
+  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.4), inset -1px -1px 1px rgba(255,255,255,0.25);
+  border-radius: inherit;
+}
+.lg-text {
+  position: relative; z-index: 3;
+  padding: 14px 44px;
+  font-size: 16px; font-weight: 600;
+  color: #fff; letter-spacing: 0.5px;
+  text-decoration: none;
+}
 
 /* Date badge */
 .date-badge {
@@ -173,11 +189,31 @@ body {
   <div class="song-name">Disillusioned</div>
   <div class="artist">Daniel Caesar</div>
   <div class="album">NEVER ENOUGH (Bonus Version)</div>
-  <a class="play-btn" href="https://music.163.com/#/song?id=2037842125" target="_blank">
-    Play
+  <a class="lg-wrapper" href="https://music.163.com/#/song?id=2037842125" target="_blank">
+    <div class="lg-effect"></div>
+    <div class="lg-tint"></div>
+    <div class="lg-shine"></div>
+    <div class="lg-text">Play</div>
   </a>
   <div class="date-badge">2026年7月6日 · 今日推荐</div>
 </div>
+
+<svg style="display:none">
+  <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence"/>
+    <feComponentTransfer in="turbulence" result="mapped">
+      <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5"/>
+      <feFuncG type="gamma" amplitude="0" exponent="1" offset="0"/>
+      <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5"/>
+    </feComponentTransfer>
+    <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap"/>
+    <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+      <fePointLight x="-200" y="-200" z="300"/>
+    </feSpecularLighting>
+    <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage"/>
+    <feDisplacementMap in="SourceGraphic" in2="softMap" scale="80" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 
 </body>
 </html>
