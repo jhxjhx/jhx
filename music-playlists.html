@@ -23,6 +23,15 @@ body {
   background-size: cover; background-position: center;
   transition: background-image 0.6s ease;
 }
+
+/* Banner media (images/videos) */
+.bg-media {
+  position: fixed; inset: 0; z-index: -1;
+  object-fit: cover; width: 100%; height: 100%;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.bg-media.show { opacity: 1; }
+
 .bg-banner::after {
   content: ''; position: absolute; inset: 0;
   background: rgba(0,0,0,0.7);
@@ -30,7 +39,7 @@ body {
 
 /* Back button */
 .back-bar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
   padding: 16px 20px; display: flex; align-items: center; gap: 12px;
 }
 .back-btn {
@@ -85,6 +94,16 @@ body {
 }
 .cover-main:active { transform: scale(0.96); }
 
+
+.gallery-title {
+  text-align: center; margin-top: 24px;
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.5s ease 0.15s;
+}
+.gallery-title.show { opacity: 1; transform: translateY(0); }
+.gallery-title .gt-artist { font-size: 14px; color: var(--text-secondary); }
+.gallery-title .gt-name { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
 /* ── Detail View ── */
 .detail-overlay {
   position: fixed; inset: 0; z-index: 30;
@@ -112,9 +131,9 @@ body {
 /* detail position - top left */
 .detail-cover.detail-pos {
   top: 120px; left: 80px;
-  width: min(160px, 18vw);
-  height: min(160px, 18vw);
-  border-radius: 10px;
+  width: min(200px, 22vw);
+  height: min(200px, 22vw);
+  border-radius: 12px;
   transform: none;
 }
 
@@ -130,11 +149,11 @@ body {
   opacity: 1; transform: translateY(0);
 }
 .detail-info .di-artist {
-  font-size: 14px; color: var(--text-secondary);
-  margin-top: min(170px, 20vw);
+  font-size: 15px; color: var(--text-secondary);
+  margin-top: min(210px, 23vw);
 }
 .detail-info .di-name {
-  font-size: 20px; font-weight: 700;
+  font-size: 24px; font-weight: 700;
   margin-top: 4px;
 }
 
@@ -179,6 +198,8 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .gallery-title .gt-name { font-size: 16px; }
+  .gallery-title .gt-artist { font-size: 12px; }
   .arrow { width: 36px; height: 36px; font-size: 18px; }
   .arrow-left { left: 12px; } .arrow-right { right: 12px; }
   .cover-main, .detail-cover.gallery-pos {
@@ -186,11 +207,11 @@ body {
   }
   .detail-cover.detail-pos {
     top: 100px; left: 30px;
-    width: 100px; height: 100px;
+    width: 120px; height: 120px;
   }
   .detail-info { top: 100px; left: 30px; }
-  .detail-info .di-artist { margin-top: 110px; font-size: 12px; }
-  .detail-info .di-name { font-size: 16px; }
+  .detail-info .di-artist { margin-top: 130px; font-size: 13px; }
+  .detail-info .di-name { font-size: 18px; }
   .song-list {
     top: 220px; right: 20px; left: 20px;
     width: auto; max-width: none; bottom: 20px;
@@ -201,6 +222,8 @@ body {
 <body>
 
 <!-- Banner background -->
+<img class="bg-media" id="bgMediaImg" style="display:none;">
+<video class="bg-media" id="bgMediaVid" muted loop playsinline style="display:none;"></video>
 <div class="bg-banner" id="bgBanner"></div>
 
 <!-- Back button -->
@@ -216,6 +239,10 @@ body {
   <button class="arrow arrow-left" onclick="prevAlbum()">&#8249;</button>
   <div class="cover-stage" id="coverStage">
     <div class="cover-main" id="coverMain" onclick="openDetail()"></div>
+  </div>
+  <div class="gallery-title" id="galleryTitle">
+    <div class="gt-artist" id="gtArtist"></div>
+    <div class="gt-name" id="gtName"></div>
   </div>
   <button class="arrow arrow-right" onclick="nextAlbum()">&#8250;</button>
 </div>
@@ -233,6 +260,48 @@ body {
 <script>
 var albums = [];
 var current = 0;
+
+// Banner media support - place images/videos as banner-0.jpg(banner-0.mp4) through banner-7.jpg(banner-7.mp4)
+var bannerVideos = [];
+for (var i = 0; i < 8; i++) {
+  var vid = document.createElement('video');
+  vid.src = 'banner-' + i + '.mp4';
+  vid.muted = true; vid.loop = true; vid.playsInline = true;
+  vid.preload = 'auto';
+  bannerVideos.push(vid);
+}
+
+function setBanner(idx) {
+  var img = document.getElementById('bgMediaImg');
+  var vid = document.getElementById('bgMediaVid');
+  var banner = document.getElementById('bgBanner');
+  
+  // Try video first
+  vid.style.display = '';
+  vid.src = 'banner-' + idx + '.mp4';
+  vid.load();
+  vid.play().then(function() {
+    vid.classList.add('show');
+    img.classList.remove('show');
+    banner.style.opacity = '0';
+  }).catch(function() {
+    // Fallback to image
+    vid.style.display = 'none';
+    vid.classList.remove('show');
+    img.style.display = '';
+    img.src = 'banner-' + idx + '.jpg';
+    img.onload = function() {
+      img.classList.add('show');
+      banner.style.opacity = '0';
+    };
+    img.onerror = function() {
+      // Fallback to cover blur
+      img.classList.remove('show');
+      banner.style.opacity = '1';
+    };
+  });
+}
+
 var isDetail = false;
 var switching = false;
 
@@ -241,6 +310,7 @@ fetch('albums_data.json')
   .then(function(data) {
     albums = data;
     showAlbum(0);
+    setTimeout(function() { document.getElementById('galleryTitle').classList.add('show'); }, 300);
   });
 
 function showAlbum(idx) {
@@ -250,6 +320,9 @@ function showAlbum(idx) {
   var cover = a.cover + '?param=400y400';
 
   document.getElementById('bgBanner').style.backgroundImage = 'url(' + cover + ')';
+  setBanner(idx);
+  document.getElementById('gtArtist').textContent = a.artist;
+  document.getElementById('gtName').textContent = a.name;
   document.getElementById('coverMain').style.backgroundImage = 'url(' + cover + ')';
   document.getElementById('detailCover').style.backgroundImage = 'url(' + cover + ')';
   document.getElementById('diArtist').textContent = a.artist;
@@ -298,6 +371,7 @@ function openDetail() {
   if (isDetail || switching) return;
   isDetail = true;
   document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('galleryTitle').classList.remove('show');
   document.getElementById('detailOverlay').classList.add('active');
   var dc = document.getElementById('detailCover');
   dc.classList.remove('gallery-pos');
@@ -318,6 +392,7 @@ function goBack() {
 function closeDetail() {
   isDetail = false;
   document.getElementById('gallery').classList.remove('hidden');
+  setTimeout(function() { document.getElementById('galleryTitle').classList.add('show'); }, 100);
   document.getElementById('detailOverlay').classList.remove('active');
   var dc = document.getElementById('detailCover');
   dc.classList.add('gallery-pos');
