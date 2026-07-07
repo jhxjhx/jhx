@@ -6,220 +6,336 @@
 <title>收藏专辑 - 蒋昊熹</title>
 <style>
 :root {
-  --bg: #121214;
-  --bg-card: #1c1c1e;
-  --bg-elevated: #242426;
-  --text: #f5f5f7;
-  --text-secondary: #98989d;
-  --accent: #fc3c44;
-  --accent-glow: rgba(252,60,68,0.25);
-  --radius: 14px;
-  --radius-sm: 10px;
+  --bg: #121214; --text: #f5f5f7; --text-secondary: #98989d;
+  --accent: #fc3c44; --radius: 14px;
 }
-
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: #000; color: var(--text);
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 32px;
-  overflow-x: hidden;
+  height: 100vh; overflow: hidden;
 }
 
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:3px; }
+/* Banner background */
+.bg-banner {
+  position: fixed; inset: 0; z-index: 0;
+  background-size: cover; background-position: center;
+  transition: background-image 0.6s ease;
+}
+.bg-banner::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.7);
+}
 
-/* Back Button */
+/* Back button */
 .back-bar {
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  background: rgba(18,18,20,0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  padding: 16px 20px; display: flex; align-items: center; gap: 12px;
 }
 .back-btn {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--bg-elevated);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text);
-  transition: background 0.2s;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: none; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text);
 }
-.back-btn:hover { background: rgba(255,255,255,0.15); }
 .back-btn svg { width: 20px; height: 20px; }
-.back-title {
-  font-size: 20px; font-weight: 700;
-  letter-spacing: 0.5px;
+.back-title { font-size: 17px; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+
+/* ── Gallery View ── */
+.gallery {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.4s ease;
+}
+.gallery.hidden { opacity: 0; pointer-events: none; }
+
+.arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 15;
+  transition: background 0.2s, transform 0.2s;
+}
+.arrow:hover { background: rgba(255,255,255,0.22); }
+.arrow:active { transform: translateY(-50%) scale(0.92); }
+.arrow-left { left: 24px; }
+.arrow-right { right: 24px; }
+
+.cover-stage {
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.cover-stage.slide-left { transform: translateX(-120px); opacity: 0; }
+.cover-stage.slide-right { transform: translateX(120px); opacity: 0; }
+
+.cover-main {
+  width: min(280px, 30vw);
+  height: min(280px, 30vw);
+  border-radius: var(--radius);
+  background: center/cover;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.cover-main:active { transform: scale(0.96); }
+
+/* ── Detail View ── */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.detail-overlay.active { opacity: 1; pointer-events: auto; }
+
+.detail-cover {
+  position: fixed;
+  width: min(280px, 30vw);
+  height: min(280px, 30vw);
+  border-radius: var(--radius);
+  background: center/cover;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  z-index: 35;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+/* gallery position - centered */
+.detail-cover.gallery-pos {
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* detail position - top left */
+.detail-cover.detail-pos {
+  top: 120px; left: 80px;
+  width: min(160px, 18vw);
+  height: min(160px, 18vw);
+  border-radius: 10px;
+  transform: none;
 }
 
-/* Page Header */
-.page-header {
-  padding: 16px 24px 4px;
+.detail-info {
+  position: fixed;
+  top: 120px; left: 80px;
+  z-index: 36;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.5s ease 0.2s;
 }
-.page-header h2 {
-  font-size: 28px; font-weight: 800;
-  letter-spacing: 0.5px;
+.detail-info.show {
+  opacity: 1; transform: translateY(0);
 }
-.page-header p {
-  font-size: 13px; color: var(--text-secondary);
+.detail-info .di-artist {
+  font-size: 14px; color: var(--text-secondary);
+  margin-top: min(170px, 20vw);
+}
+.detail-info .di-name {
+  font-size: 20px; font-weight: 700;
   margin-top: 4px;
 }
 
-/* Playlist Grid */
-.playlist-grid {
-  padding: 8px 20px 20px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+/* Song list */
+.song-list {
+  position: fixed;
+  top: 120px; right: 60px; bottom: 40px;
+  width: calc(100% - min(280px, 32vw) - 100px);
+  max-width: 600px;
+  z-index: 36;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.5s ease 0.3s;
+  padding-right: 8px;
 }
-.playlist-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  text-decoration: none;
-  color: inherit;
-  display: block;
+.song-list.show {
+  opacity: 1; transform: translateX(0);
 }
-.playlist-card:hover { transform: scale(1.03); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.song-list::-webkit-scrollbar { width: 4px; }
+.song-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
-.playlist-cover {
-  width: 100%;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: flex-end;
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
+.song-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 8px;
+  cursor: pointer; text-decoration: none; color: inherit;
+  transition: background 0.2s;
 }
-.playlist-cover::after {
-  content: '';
-  position: absolute; inset:0;
-  background: linear-gradient(transparent 55%, rgba(0,0,0,0.7));
+.song-row:hover { background: rgba(255,255,255,0.08); }
+.song-num {
+  width: 28px; text-align: right;
+  font-size: 13px; color: var(--text-secondary);
+  flex-shrink: 0;
 }
-.playlist-cover span {
-  position: relative; z-index:1;
-  font-size: 14px; font-weight: 600;
-  letter-spacing: 0.5px;
-}
-.playlist-info {
-  padding: 12px 14px 14px;
-}
-.playlist-info .pl-name {
-  font-size: 14px; font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.playlist-info .pl-count {
+.song-body { flex: 1; min-width: 0; }
+.song-body .sn { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-body .sa { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.song-dur {
   font-size: 12px; color: var(--text-secondary);
-  margin-top: 2px;
+  flex-shrink: 0;
 }
-
-.g1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-.g2 { background: linear-gradient(135deg, #8e44ad, #6c3483); }
-.g3 { background: linear-gradient(135deg, #2980b9, #1a5276); }
-.g4 { background: linear-gradient(135deg, #27ae60, #1e8449); }
-.g5 { background: linear-gradient(135deg, #f39c12, #d35400); }
-.g6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
-.g7 { background: linear-gradient(135deg, #e91e63, #ad1457); }
-.g8 { background: linear-gradient(135deg, #3f51b5, #283593); }
 
 /* Responsive */
-@media (min-width: 600px) {
-  .playlist-grid { padding: 8px 40px 20px; grid-template-columns: repeat(4, 1fr); }
-  .page-header { padding: 16px 40px 4px; }
-  .back-bar { padding: 16px 32px; }
+@media (max-width: 768px) {
+  .arrow { width: 36px; height: 36px; font-size: 18px; }
+  .arrow-left { left: 12px; } .arrow-right { right: 12px; }
+  .cover-main, .detail-cover.gallery-pos {
+    width: min(220px, 55vw); height: min(220px, 55vw);
+  }
+  .detail-cover.detail-pos {
+    top: 100px; left: 30px;
+    width: 100px; height: 100px;
+  }
+  .detail-info { top: 100px; left: 30px; }
+  .detail-info .di-artist { margin-top: 110px; font-size: 12px; }
+  .detail-info .di-name { font-size: 16px; }
+  .song-list {
+    top: 220px; right: 20px; left: 20px;
+    width: auto; max-width: none; bottom: 20px;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- Back Bar -->
+<!-- Banner background -->
+<div class="bg-banner" id="bgBanner"></div>
+
+<!-- Back button -->
 <div class="back-bar">
-  <button class="back-btn" onclick="history.back()">
+  <button class="back-btn" onclick="goBack()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
-  <span class="back-title">收藏专辑</span>
+  <span class="back-title" id="backTitle">收藏专辑</span>
 </div>
 
-<!-- Page Header -->
-<div class="page-header">
-  <h2>收藏专辑</h2>
-  <p>收藏的专辑</p>
-</div>
-
-<!-- Playlist Grid -->
-  <div class="playlist-grid">
-    <a class="playlist-card" href="https://music.163.com/#/album?id=34818182" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p1.music.126.net/6-TgBhtH2gK2rA2G582Fpg==/109951167817024864.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>Blonde</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">Blonde</div>
-        <div class="pl-count">Frank Ocean</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=163364926" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p1.music.126.net/vwoE2lBarD6yNzNhYiHYMg==/109951168535489953.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>NEVER ENOUGH</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">NEVER ENOUGH</div>
-        <div class="pl-count">Daniel Caesar</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=295502" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p1.music.126.net/Qe5HE4VZtr8XjiNP6OHGBg==/109951165983052356.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>The Miseducation of Lauryn Hill</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">The Miseducation of Lauryn Hill</div>
-        <div class="pl-count">Lauryn Hill</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=1738265" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p2.music.126.net/WOH764j6Yr2z0kTjvsomsQ==/109951170517260769.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>The College Dropout</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">The College Dropout</div>
-        <div class="pl-count">Kanye West</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=1734888" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p1.music.126.net/SCk1DYSjx9m3AR6r3lo7Fw==/109951170271201605.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>good kid, m.A.A.d city</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">good kid, m.A.A.d city</div>
-        <div class="pl-count">Kendrick Lamar</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=3109151" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p2.music.126.net/f59gwayE8deSjfi9i1G2vQ==/7848313999540641.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>To Pimp a Butterfly</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">To Pimp a Butterfly</div>
-        <div class="pl-count">Kendrick Lamar</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=1631862" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p1.music.126.net/D2PkpLIVPQhen22WKaFo9w==/109951170271192448.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>channel ORANGE</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">channel ORANGE</div>
-        <div class="pl-count">Frank Ocean</div>
-      </div>
-    </a>
-    <a class="playlist-card" href="https://music.163.com/#/album?id=156059897" target="_blank">
-      <div class="playlist-cover" style="background: url(https://p2.music.126.net/qQ5e7rM-xY6YWJW9_3tR-w==/109951168121859537.jpg) center/cover, linear-gradient(135deg, #333, #222);"><span>SOS</span></div>
-      <div class="playlist-info">
-        <div class="pl-name">SOS</div>
-        <div class="pl-count">SZA</div>
-      </div>
-    </a>
+<!-- Gallery View -->
+<div class="gallery" id="gallery">
+  <button class="arrow arrow-left" onclick="prevAlbum()">&#8249;</button>
+  <div class="cover-stage" id="coverStage">
+    <div class="cover-main" id="coverMain" onclick="openDetail()"></div>
   </div>
+  <button class="arrow arrow-right" onclick="nextAlbum()">&#8250;</button>
+</div>
 
+<!-- Detail Overlay -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-cover gallery-pos" id="detailCover"></div>
+  <div class="detail-info" id="detailInfo">
+    <div class="di-artist" id="diArtist"></div>
+    <div class="di-name" id="diName"></div>
+  </div>
+  <div class="song-list" id="songList"></div>
+</div>
+
+<script>
+var albums = [];
+var current = 0;
+var isDetail = false;
+var switching = false;
+
+fetch('albums_data.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    albums = data;
+    showAlbum(0);
+  });
+
+function showAlbum(idx) {
+  if (idx < 0 || idx >= albums.length) return;
+  current = idx;
+  var a = albums[current];
+  var cover = a.cover + '?param=400y400';
+
+  document.getElementById('bgBanner').style.backgroundImage = 'url(' + cover + ')';
+  document.getElementById('coverMain').style.backgroundImage = 'url(' + cover + ')';
+  document.getElementById('detailCover').style.backgroundImage = 'url(' + cover + ')';
+  document.getElementById('diArtist').textContent = a.artist;
+  document.getElementById('diName').textContent = a.name;
+
+  var sl = document.getElementById('songList');
+  sl.innerHTML = '';
+  a.songs.forEach(function(s, i) {
+    var row = document.createElement('a');
+    row.className = 'song-row';
+    row.href = 'https://music.163.com/#/song?id=' + s.id;
+    row.target = '_blank';
+    row.innerHTML =
+      '<span class="song-num">' + (i + 1) + '</span>' +
+      '<div class="song-body"><div class="sn">' + s.name + '</div><div class="sa">' + s.artist + '</div></div>' +
+      '<span class="song-dur">&#9654;</span>';
+    sl.appendChild(row);
+  });
+}
+
+function nextAlbum() {
+  if (switching || isDetail) return;
+  switching = true;
+  var stage = document.getElementById('coverStage');
+  stage.classList.add('slide-left');
+  setTimeout(function() {
+    showAlbum((current + 1) % albums.length);
+    stage.classList.remove('slide-left');
+    switching = false;
+  }, 350);
+}
+
+function prevAlbum() {
+  if (switching || isDetail) return;
+  switching = true;
+  var stage = document.getElementById('coverStage');
+  stage.classList.add('slide-right');
+  setTimeout(function() {
+    showAlbum((current - 1 + albums.length) % albums.length);
+    stage.classList.remove('slide-right');
+    switching = false;
+  }, 350);
+}
+
+function openDetail() {
+  if (isDetail || switching) return;
+  isDetail = true;
+  document.getElementById('gallery').classList.add('hidden');
+  document.getElementById('detailOverlay').classList.add('active');
+  var dc = document.getElementById('detailCover');
+  dc.classList.remove('gallery-pos');
+  dc.classList.add('detail-pos');
+  document.getElementById('detailInfo').classList.add('show');
+  document.getElementById('songList').classList.add('show');
+  document.getElementById('backTitle').textContent = '返回';
+}
+
+function goBack() {
+  if (isDetail) {
+    closeDetail();
+  } else {
+    history.back();
+  }
+}
+
+function closeDetail() {
+  isDetail = false;
+  document.getElementById('gallery').classList.remove('hidden');
+  document.getElementById('detailOverlay').classList.remove('active');
+  var dc = document.getElementById('detailCover');
+  dc.classList.add('gallery-pos');
+  dc.classList.remove('detail-pos');
+  document.getElementById('detailInfo').classList.remove('show');
+  document.getElementById('songList').classList.remove('show');
+  document.getElementById('backTitle').textContent = '收藏专辑';
+}
+
+// Keyboard
+document.addEventListener('keydown', function(e) {
+  if (!isDetail) {
+    if (e.key === 'ArrowLeft') prevAlbum();
+    if (e.key === 'ArrowRight') nextAlbum();
+    if (e.key === 'Enter') openDetail();
+  }
+  if (e.key === 'Escape' && isDetail) closeDetail();
+});
+</script>
 </body>
 </html>
