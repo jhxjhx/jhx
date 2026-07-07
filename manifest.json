@@ -1,6 +1,6 @@
 {
-  "name": "蒋昊熹的音乐主页",
-  "short_name": "JHX Music",
+  "name": "我",
+  "short_name": "我",
   "description": "个人音乐收藏与推荐",
   "start_url": "/jhx/",
   "scope": "/jhx/",
