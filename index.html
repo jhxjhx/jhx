@@ -507,6 +507,9 @@ if ('serviceWorker' in navigator) {
 var deferredPrompt;
 var installBtn = document.getElementById('installBtn');
 
+// Always show button after 2 seconds
+setTimeout(function() { installBtn.classList.add('show'); }, 2000);
+
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   deferredPrompt = e;
@@ -519,12 +522,15 @@ window.addEventListener('appinstalled', function() {
 });
 
 function installApp() {
-  if (!deferredPrompt) { alert('请用Chrome打开并多访问几次'); return; }
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(r) {
-    if (r.outcome === 'accepted') installBtn.classList.remove('show');
-    deferredPrompt = null;
-  });
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') installBtn.classList.remove('show');
+      deferredPrompt = null;
+    });
+  } else {
+    alert('请用Chrome或Edge浏览器打开，然后：\n\n安卓：点浏览器菜单 → 安装应用\niPhone：点分享 → 添加到主屏幕\n电脑：地址栏右侧点安装图标');
+  }
 }
 </script>
 
