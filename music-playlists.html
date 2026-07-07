@@ -161,12 +161,15 @@ body {
 .album-desc {
   max-width: 620px;
   margin-top: 20px;
+  max-height: 280px; overflow-y: auto;
   font-size: 13px; color: var(--text-secondary);
   line-height: 1.7;
   opacity: 0; transform: translateY(10px);
   transition: all 0.5s ease 0.4s;
 }
 .album-desc.show { opacity: 1; transform: translateY(0); }
+.album-desc::-webkit-scrollbar { width: 3px; }
+.album-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
 .detail-info .di-name {
   font-size: 24px; font-weight: 700;
@@ -232,12 +235,15 @@ body {
 .album-desc {
   max-width: 620px;
   margin-top: 20px;
+  max-height: 280px; overflow-y: auto;
   font-size: 13px; color: var(--text-secondary);
   line-height: 1.7;
   opacity: 0; transform: translateY(10px);
   transition: all 0.5s ease 0.4s;
 }
 .album-desc.show { opacity: 1; transform: translateY(0); }
+.album-desc::-webkit-scrollbar { width: 3px; }
+.album-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
 .detail-info .di-name { font-size: 18px; }
   .song-list {
