@@ -312,7 +312,7 @@ body {
 <section class="hero" id="me">
   <img class="avatar" src="avatar.jpg" alt="avatar">
   <div class="hero-text">
-    <h1 id="heroName" onclick="editHeroName()">75444 user</h1>
+    <h1 id="heroName" contenteditable="true" onblur="saveHeroName()">75444 user</h1>
   </div>
 </section>
 
@@ -539,34 +539,12 @@ function installApp() {
 <script>
 (function() {
   var n = localStorage.getItem('jhx_name');
-  var a = localStorage.getItem('jhx_avatar');
   if (n) document.getElementById('heroName').textContent = n;
-  if (a) document.getElementById('heroAvatar').src = a;
 })();
 
-function changeAvatar(e) {
-  var f = e.target.files[0];
-  if (!f) return;
-  var r = new FileReader();
-  r.onload = function(ev) {
-    document.getElementById('heroAvatar').src = ev.target.result;
-    localStorage.setItem('jhx_avatar', ev.target.result);
-  };
-  r.readAsDataURL(f);
-}
-
-function editHeroName() {
-  var el = document.getElementById('heroName');
-  var old = el.textContent;
-  el.innerHTML = '<input id="nameInput" value="' + old + '" style="background:var(--bg-card);border:1px solid var(--text-secondary);color:var(--text);font-size:28px;font-weight:700;padding:2px 8px;border-radius:8px;width:200px;" onblur="saveHeroName()" onkeydown="if(event.key==='Enter')this.blur()">';
-  document.getElementById('nameInput').focus();
-}
-
 function saveHeroName() {
-  var inp = document.getElementById('nameInput');
-  if (!inp) return;
-  var n = inp.value.trim() || '75444 user';
-  document.getElementById('heroName').textContent = n;
+  var el = document.getElementById('heroName');
+  var n = el.textContent.trim() || '75444 user';
   localStorage.setItem('jhx_name', n);
 }
 </script>
