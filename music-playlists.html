@@ -95,8 +95,13 @@ body {
 .cover-main:active { transform: scale(0.96); }
 
 
+
+.gallery-inner {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0;
+}
 .gallery-title {
-  text-align: center; margin-top: 24px;
+  text-align: center; margin-top: 16px;
   opacity: 0; transform: translateY(10px);
   transition: all 0.5s ease 0.15s;
 }
@@ -154,6 +159,7 @@ body {
 }
 
 .album-desc {
+  max-width: min(200px, 22vw);
   margin-top: 20px;
   font-size: 13px; color: var(--text-secondary);
   line-height: 1.7;
@@ -219,6 +225,7 @@ body {
   .cover-main, .detail-cover.gallery-pos {
     width: min(220px, 55vw); height: min(220px, 55vw);
   }
+  .album-desc { max-width: 120px; }
   .detail-cover.detail-pos {
     top: 100px; left: 30px;
     width: 120px; height: 120px;
@@ -227,6 +234,7 @@ body {
   .detail-info .di-artist { margin-top: 130px; font-size: 13px; }
   
 .album-desc {
+  max-width: min(200px, 22vw);
   margin-top: 20px;
   font-size: 13px; color: var(--text-secondary);
   line-height: 1.7;
@@ -265,12 +273,14 @@ body {
 <!-- Gallery View -->
 <div class="gallery" id="gallery">
   <button class="arrow arrow-left" onclick="prevAlbum()">&#8249;</button>
-  <div class="cover-stage" id="coverStage">
-    <div class="cover-main" id="coverMain" onclick="openDetail()"></div>
-  </div>
-  <div class="gallery-title" id="galleryTitle">
-    <div class="gt-artist" id="gtArtist"></div>
-    <div class="gt-name" id="gtName"></div>
+  <div class="gallery-inner">
+    <div class="cover-stage" id="coverStage">
+      <div class="cover-main" id="coverMain" onclick="openDetail()"></div>
+    </div>
+    <div class="gallery-title" id="galleryTitle">
+      <div class="gt-artist" id="gtArtist"></div>
+      <div class="gt-name" id="gtName"></div>
+    </div>
   </div>
   <button class="arrow arrow-right" onclick="nextAlbum()">&#8250;</button>
 </div>
