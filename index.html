@@ -2,6 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="theme-color" content="#121214">
+<link rel="manifest" href="manifest.json">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的主页</title>
 <style>
@@ -476,5 +478,10 @@ function openMusic(el) {
 }
 </script>
 
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/jhx/sw.js');
+}
+</script>
 </body>
 </html>
