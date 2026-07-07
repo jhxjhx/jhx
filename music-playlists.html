@@ -358,7 +358,7 @@ function showAlbum(idx) {
   document.getElementById('detailCover').style.backgroundImage = 'url(' + cover + ')';
   document.getElementById('diArtist').textContent = a.artist;
   document.getElementById('diName').textContent = a.name;
-  document.getElementById('albumDesc').textContent = a.description || '';
+  document.getElementById('albumDesc').innerHTML = a.description || '';
 
   var sl = document.getElementById('songList');
   sl.innerHTML = '';
