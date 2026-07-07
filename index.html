@@ -286,6 +286,19 @@ body {
   .avatar { width:100px; height:100px; }
   .hero-text h1 { font-size:34px; }
 }
+
+.install-btn {
+  position: fixed; bottom: 90px; right: 20px; z-index: 999;
+  padding: 12px 20px; border-radius: 24px;
+  background: var(--accent); color: #fff;
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(252,60,68,0.4);
+  display: none; align-items: center; gap: 6px;
+  animation: fadeUp 0.4s ease;
+}
+.install-btn.show { display: flex; }
+
 </style>
 </head>
 <body>
@@ -483,5 +496,37 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/jhx/sw.js');
 }
 </script>
+
+<button class="install-btn" id="installBtn" onclick="installApp()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M5 17v3h14v-3"/></svg>
+  安装App
+</button>
+
+
+<script>
+var deferredPrompt;
+var installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.classList.add('show');
+});
+
+window.addEventListener('appinstalled', function() {
+  installBtn.classList.remove('show');
+  deferredPrompt = null;
+});
+
+function installApp() {
+  if (!deferredPrompt) { alert('请用Chrome打开并多访问几次'); return; }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r) {
+    if (r.outcome === 'accepted') installBtn.classList.remove('show');
+    deferredPrompt = null;
+  });
+}
+</script>
+
 </body>
 </html>
