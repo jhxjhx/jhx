@@ -291,6 +291,19 @@ body {
   100% { opacity: 0; transform: translateY(-60px); }
 }
 
+
+.profile-avatar { cursor: pointer; position: relative; }
+.profile-avatar::after {
+  content: '编辑'; position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.6); color: #fff; font-size: 11px;
+  text-align: center; padding: 3px 0; opacity: 0;
+  transition: opacity 0.2s; border-radius: 0 0 50% 50%;
+}
+.profile-avatar:hover::after { opacity: 1; }
+.profile-info h2 { cursor: pointer; }
+.profile-info h2:hover { opacity: 0.7; }
+input#avatarUpload { display: none; }
+
 </style>
 </head>
 <body>
@@ -307,9 +320,10 @@ body {
 
 <!-- Profile Header -->
 <div class="profile-header">
-  <div class="profile-avatar" style="background: url(avatar.jpg) center/cover;"></div>
+  <input type="file" id="avatarUpload" accept="image/*" onchange="changeAvatar(event)">
+  <div class="profile-avatar" id="profileAvatar" style="background: url(avatar.jpg) center/cover;" onclick="document.getElementById('avatarUpload').click()"></div>
   <div class="profile-info">
-    <h2>lonnybreauxxx</h2>
+    <h2 id="profileName" onclick="editName()">lonnybreauxxx</h2>
     <div class="profile-bio">691小时</div>
   </div>
 </div>
@@ -446,6 +460,44 @@ function closeModal(e) {
   if (e.target === document.getElementById('modalOverlay')) {
     document.getElementById('modalOverlay').classList.remove('active');
   }
+}
+</script>
+
+
+<script>
+// Load saved profile
+(function() {
+  var savedName = localStorage.getItem('jhx_name');
+  var savedAvatar = localStorage.getItem('jhx_avatar');
+  if (savedName) document.getElementById('profileName').textContent = savedName;
+  if (savedAvatar) document.getElementById('profileAvatar').style.backgroundImage = 'url(' + savedAvatar + ')';
+})();
+
+function changeAvatar(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var dataUrl = ev.target.result;
+    document.getElementById('profileAvatar').style.backgroundImage = 'url(' + dataUrl + ')';
+    localStorage.setItem('jhx_avatar', dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+function editName() {
+  var el = document.getElementById('profileName');
+  var old = el.textContent;
+  el.innerHTML = '<input id="nameInput" value="' + old + '" style="background:var(--bg-card);border:1px solid var(--text-secondary);color:var(--text);font-size:24px;font-weight:800;padding:4px 8px;border-radius:8px;width:100%;" onblur="saveName()" onkeydown="if(event.key==='Enter')this.blur()">';
+  document.getElementById('nameInput').focus();
+}
+
+function saveName() {
+  var input = document.getElementById('nameInput');
+  if (!input) return;
+  var name = input.value.trim() || 'lonnybreauxxx';
+  document.getElementById('profileName').textContent = name;
+  localStorage.setItem('jhx_name', name);
 }
 </script>
 
