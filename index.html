@@ -299,6 +299,11 @@ body {
 }
 .install-btn.show { display: flex; }
 
+
+.avatar { cursor: pointer; }
+.hero-text h1 { cursor: pointer; }
+.hero-text h1:hover { opacity: 0.7; }
+
 </style>
 </head>
 <body>
@@ -307,7 +312,7 @@ body {
 <section class="hero" id="me">
   <img class="avatar" src="avatar.jpg" alt="avatar">
   <div class="hero-text">
-    <h1>75444 user</h1>
+    <h1 id="heroName" onclick="editHeroName()">75444 user</h1>
   </div>
 </section>
 
@@ -341,14 +346,36 @@ body {
     </a>
     
 
-    <a class="music-card" href="music-home.html" onclick="event.preventDefault();alert('即将开放')">
-      <div class="music-cover g7"><span>我</span></div>
-      <div class="music-info">
-        <div class="title">我</div>
-        <div class="sub">即将开放</div>
-      </div>
-    </a>
+</div>
+</section>
 
+<!-- 我 -->
+<section class="section anim-in" id="me-section">
+  <div class="section-header">
+    <h2>我</h2>
+    <span>全部 &rsaquo;</span>
+  </div>
+  <div class="task-list">
+    <div class="task-card" onclick="alert('即将开放')">
+      <div class="task-icon active">&#9679;</div>
+      <div class="task-body">
+        <div class="task-title">个人主页</div>
+        <div class="task-desc">即将开放</div>
+      </div>
+      <div class="task-meta">细节</div>
+    </div>
+    <div class="task-card" onclick="alert('即将开放')">
+      <div class="task-icon soon">&#9711;</div>
+      <div class="task-body">
+        <div class="task-title">我的动态</div>
+        <div class="task-desc">即将开放</div>
+      </div>
+      <div class="task-meta">细节</div>
+    </div>
+  </div>
+</section>
+
+<!-- 社区 -->
   </div>
 
 </section>
@@ -505,6 +532,42 @@ function installApp() {
   } else {
     alert('请用Chrome或Edge浏览器打开，然后：\n\n安卓：点浏览器菜单 → 安装应用\niPhone：点分享 → 添加到主屏幕\n电脑：地址栏右侧点安装图标');
   }
+}
+</script>
+
+
+<script>
+(function() {
+  var n = localStorage.getItem('jhx_name');
+  var a = localStorage.getItem('jhx_avatar');
+  if (n) document.getElementById('heroName').textContent = n;
+  if (a) document.getElementById('heroAvatar').src = a;
+})();
+
+function changeAvatar(e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    document.getElementById('heroAvatar').src = ev.target.result;
+    localStorage.setItem('jhx_avatar', ev.target.result);
+  };
+  r.readAsDataURL(f);
+}
+
+function editHeroName() {
+  var el = document.getElementById('heroName');
+  var old = el.textContent;
+  el.innerHTML = '<input id="nameInput" value="' + old + '" style="background:var(--bg-card);border:1px solid var(--text-secondary);color:var(--text);font-size:28px;font-weight:700;padding:2px 8px;border-radius:8px;width:200px;" onblur="saveHeroName()" onkeydown="if(event.key==='Enter')this.blur()">';
+  document.getElementById('nameInput').focus();
+}
+
+function saveHeroName() {
+  var inp = document.getElementById('nameInput');
+  if (!inp) return;
+  var n = inp.value.trim() || '75444 user';
+  document.getElementById('heroName').textContent = n;
+  localStorage.setItem('jhx_name', n);
 }
 </script>
 
