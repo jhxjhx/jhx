@@ -21,7 +21,7 @@ body {
 .bg-banner {
   position: fixed; inset: 0; z-index: 0;
   background-size: cover; background-position: center;
-  transition: background-image 0.6s ease;
+  transition: background-image 0.6s ease, filter 0.6s ease;
 }
 
 /* Banner media (images/videos) */
@@ -31,6 +31,7 @@ body {
   opacity: 0; transition: opacity 0.8s ease;
 }
 .bg-media.show { opacity: 1; }
+.bg-media.blur { filter: blur(30px); transition: filter 0.6s ease; }
 
 .bg-banner::after {
   content: ''; position: absolute; inset: 0;
@@ -427,6 +428,9 @@ function openDetail() {
   document.getElementById('albumDesc').classList.add('show');
   document.getElementById('songList').classList.add('show');
   document.getElementById('backTitle').textContent = '返回';
+  document.getElementById('bgMediaImg').classList.add('blur');
+  document.getElementById('bgMediaVid').classList.add('blur');
+  document.getElementById('bgBanner').style.filter = 'blur(30px)';
 }
 
 function goBack() {
@@ -449,6 +453,9 @@ function closeDetail() {
   document.getElementById('albumDesc').classList.remove('show');
   document.getElementById('songList').classList.remove('show');
   document.getElementById('backTitle').textContent = '收藏专辑';
+  document.getElementById('bgMediaImg').classList.remove('blur');
+  document.getElementById('bgMediaVid').classList.remove('blur');
+  document.getElementById('bgBanner').style.filter = '';
 }
 
 // Keyboard
