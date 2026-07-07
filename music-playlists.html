@@ -152,6 +152,20 @@ body {
   font-size: 15px; color: var(--text-secondary);
   margin-top: min(210px, 23vw);
 }
+
+.album-desc {
+  margin-top: 20px;
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.7;
+  max-height: 150px; overflow-y: auto;
+  padding-right: 8px;
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.5s ease 0.4s;
+}
+.album-desc.show { opacity: 1; transform: translateY(0); }
+.album-desc::-webkit-scrollbar { width: 3px; }
+.album-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
 .detail-info .di-name {
   font-size: 24px; font-weight: 700;
   margin-top: 4px;
@@ -211,7 +225,21 @@ body {
   }
   .detail-info { top: 100px; left: 30px; }
   .detail-info .di-artist { margin-top: 130px; font-size: 13px; }
-  .detail-info .di-name { font-size: 18px; }
+  
+.album-desc {
+  margin-top: 20px;
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.7;
+  max-height: 150px; overflow-y: auto;
+  padding-right: 8px;
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.5s ease 0.4s;
+}
+.album-desc.show { opacity: 1; transform: translateY(0); }
+.album-desc::-webkit-scrollbar { width: 3px; }
+.album-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+.detail-info .di-name { font-size: 18px; }
   .song-list {
     top: 220px; right: 20px; left: 20px;
     width: auto; max-width: none; bottom: 20px;
@@ -253,6 +281,7 @@ body {
   <div class="detail-info" id="detailInfo">
     <div class="di-artist" id="diArtist"></div>
     <div class="di-name" id="diName"></div>
+    <div class="album-desc" id="albumDesc"></div>
   </div>
   <div class="song-list" id="songList"></div>
 </div>
@@ -327,6 +356,7 @@ function showAlbum(idx) {
   document.getElementById('detailCover').style.backgroundImage = 'url(' + cover + ')';
   document.getElementById('diArtist').textContent = a.artist;
   document.getElementById('diName').textContent = a.name;
+  document.getElementById('albumDesc').textContent = a.description || '';
 
   var sl = document.getElementById('songList');
   sl.innerHTML = '';
@@ -377,6 +407,7 @@ function openDetail() {
   dc.classList.remove('gallery-pos');
   dc.classList.add('detail-pos');
   document.getElementById('detailInfo').classList.add('show');
+  document.getElementById('albumDesc').classList.add('show');
   document.getElementById('songList').classList.add('show');
   document.getElementById('backTitle').textContent = '返回';
 }
@@ -398,6 +429,7 @@ function closeDetail() {
   dc.classList.add('gallery-pos');
   dc.classList.remove('detail-pos');
   document.getElementById('detailInfo').classList.remove('show');
+  document.getElementById('albumDesc').classList.remove('show');
   document.getElementById('songList').classList.remove('show');
   document.getElementById('backTitle').textContent = '收藏专辑';
 }
