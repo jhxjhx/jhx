@@ -312,31 +312,40 @@ function setBanner(idx) {
   var img = document.getElementById('bgMediaImg');
   var vid = document.getElementById('bgMediaVid');
   var banner = document.getElementById('bgBanner');
-  
-  // Try video first
-  vid.style.display = '';
-  vid.src = 'banner-' + idx + '.mp4';
-  vid.load();
-  vid.play().then(function() {
-    vid.classList.add('show');
-    img.classList.remove('show');
-    banner.style.opacity = '0';
-  }).catch(function() {
-    // Fallback to image
-    vid.style.display = 'none';
-    vid.classList.remove('show');
+  var isMobile = window.innerWidth < 768;
+
+  // On mobile, skip video to avoid data/playback issues
+  if (isMobile) {
+    vid.classList.remove('show'); vid.style.display = 'none';
     img.style.display = '';
     img.src = 'banner-' + idx + '.jpg';
-    img.onload = function() {
-      img.classList.add('show');
-      banner.style.opacity = '0';
-    };
-    img.onerror = function() {
-      // Fallback to cover blur
+    img.onload = function() { img.classList.add('show'); banner.style.opacity = '0'; };
+    img.onerror = function() { img.classList.remove('show'); banner.style.opacity = '1'; };
+    return;
+  }
+
+  // Desktop: try video, with suppressed errors
+  vid.classList.remove('show');
+  vid.style.display = '';
+  vid.src = 'banner-' + idx + '.mp4';
+  vid.onerror = function() { useFallback(); };
+  vid.load();
+  var playPromise = vid.play();
+  if (playPromise) {
+    playPromise.then(function() {
+      vid.classList.add('show');
       img.classList.remove('show');
-      banner.style.opacity = '1';
-    };
-  });
+      banner.style.opacity = '0';
+    }).catch(function() { useFallback(); });
+  } else { useFallback(); }
+
+  function useFallback() {
+    vid.style.display = 'none'; vid.classList.remove('show'); vid.pause();
+    img.style.display = '';
+    img.src = 'banner-' + idx + '.jpg';
+    img.onload = function() { img.classList.add('show'); banner.style.opacity = '0'; };
+    img.onerror = function() { img.classList.remove('show'); banner.style.opacity = '1'; };
+  }
 }
 
 var isDetail = false;
