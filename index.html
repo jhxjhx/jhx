@@ -556,7 +556,7 @@ function saveHeroName() {
 
 <script>
 (function() {
-  var email = localStorage.getItem('jhx_login');
+  var email = localStorage.getItem('jhx_email');
   if (email) {
     var el = document.getElementById('loginStatus');
     if (el) { el.textContent = email; el.onclick = null; el.style.cursor = 'default'; }
@@ -564,7 +564,7 @@ function saveHeroName() {
 })();
 
 function gotoPage(url) {
-  var email = localStorage.getItem('jhx_login');
+  var email = localStorage.getItem('jhx_email');
   // If going to login page but already logged in, go to community instead
   if (url === 'login.html' && email) {
     alert('已登录：' + email);

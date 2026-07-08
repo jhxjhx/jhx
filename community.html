@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#121214">
+<link rel="manifest" href="manifest.json">
+<title>社区</title>
+<style>
+:root { --bg: #121214; --bg-card: #1c1c1e; --text: #f5f5f7; --text-secondary: #98989d; --accent: #fc3c44; --radius: 14px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+.back-bar { padding: 16px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; background: rgba(18,18,20,0.9); backdrop-filter: blur(10px); z-index: 10; }
+.back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
+.back-btn svg { width: 20px; height: 20px; }
+.back-title { font-size: 17px; font-weight: 600; }
+
+.container { padding: 16px 20px 80px; max-width: 600px; margin: 0 auto; }
+
+.post-box { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; }
+.post-box textarea { width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; padding: 12px; resize: vertical; min-height: 60px; outline: none; }
+.post-box textarea:focus { border-color: var(--accent); }
+.post-box .actions { display: flex; justify-content: flex-end; margin-top: 10px; gap: 8px; }
+.post-btn { padding: 8px 20px; background: var(--accent); color: #fff; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+.post-item { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+.post-item .author { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+.post-item .content { font-size: 14px; line-height: 1.6; }
+.post-item .time { font-size: 11px; color: var(--text-secondary); margin-top: 8px; }
+
+.empty { text-align: center; color: var(--text-secondary); padding: 40px; font-size: 14px; }
+.login-hint { text-align: center; padding: 60px 20px; }
+.login-hint a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <button class="back-btn" onclick="location.href='index.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="back-title">社区</span>
+</div>
+
+<div class="container">
+  <div id="notLoggedIn" class="login-hint">
+    <p style="font-size:15px;color:var(--text-secondary);">请先登录后参与社区</p>
+    <p style="margin-top:12px;"><a href="login.html">去登录</a></p>
+  </div>
+
+  <div id="loggedIn" style="display:none">
+    <div class="post-box">
+      <textarea id="postContent" placeholder="分享你的想法..."></textarea>
+      <div class="actions">
+        <button class="post-btn" onclick="addPost()">发布</button>
+      </div>
+    </div>
+    <div id="postList"></div>
+  </div>
+</div>
+
+<script>
+var ENV = 'music75444-d5gorwjxw305fd5a6';
+var API = 'https://' + ENV + '.ap-shanghai.tcb-api.tencentcloudapi.com';
+var email = localStorage.getItem('jhx_email');
+var token = localStorage.getItem('jhx_token');
+
+if (email && token) {
+  document.getElementById('notLoggedIn').style.display = 'none';
+  document.getElementById('loggedIn').style.display = '';
+  loadPosts();
+}
+
+async function callAPI(method, path, body) {
+  var headers = {'Content-Type': 'application/json'};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  var r = await fetch(API + path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined });
+  return r.json();
+}
+
+async function addPost() {
+  var content = document.getElementById('postContent').value.trim();
+  if (!content) return;
+  var btn = document.querySelector('.post-btn');
+  btn.disabled = true; btn.textContent = '发送中...';
+  try {
+    await callAPI('POST', '/web', {
+      action: 'database.addDocument',
+      collectionName: 'posts',
+      data: { content: content, author: email, createdAt: Date.now() }
+    });
+    document.getElementById('postContent').value = '';
+    loadPosts();
+  } catch(e) {
+    alert('发布失败: ' + (e.message || '网络错误'));
+  }
+  btn.disabled = false; btn.textContent = '发布';
+}
+
+async function loadPosts() {
+  var list = document.getElementById('postList');
+  try {
+    var res = await callAPI('POST', '/web', {
+      action: 'database.queryDocument',
+      collectionName: 'posts',
+      order: [{ field: 'createdAt', direction: 'desc' }],
+      limit: 50
+    });
+    var posts = res.data || [];
+    if (posts.length === 0) {
+      list.innerHTML = '<div class="empty">暂无帖子，发第一条吧</div>';
+      return;
+    }
+    list.innerHTML = posts.map(function(p) {
+      var d = new Date(p.createdAt || Date.now());
+      var time = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      return '<div class="post-item"><div class="author">' + (p.author || '匿名') + '</div><div class="content">' + (p.content || '') + '</div><div class="time">' + time + '</div></div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="empty">加载失败，请刷新重试</div>';
+  }
+}
+</script>
+</body>
+</html>
