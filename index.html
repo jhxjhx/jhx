@@ -556,18 +556,18 @@ function saveHeroName() {
 
 <script>
 (function() {
-  var email = localStorage.getItem('jhx_email');
-  if (email) {
+  var id = localStorage.getItem('jhx_id');
+  if (id) {
     var el = document.getElementById('loginStatus');
-    if (el) { el.textContent = email; el.onclick = null; el.style.cursor = 'default'; }
+    if (el) { el.textContent = 'ID: ' + id; el.onclick = null; el.style.cursor = 'default'; }
   }
 })();
 
 function gotoPage(url) {
-  var email = localStorage.getItem('jhx_email');
+  var id = localStorage.getItem('jhx_id');
   // If going to login page but already logged in, go to community instead
-  if (url === 'login.html' && email) {
-    alert('已登录：' + email);
+  if (url === 'login.html' && id) {
+    alert('已登录：ID ' + id);
     return;
   }
   location.href = url;
