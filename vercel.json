@@ -1,5 +1,11 @@
 {
   "version": 2,
-  "builds": [{ "src": "api/community.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/api/(.*)", "dest": "/api/community.js" }]
+  "functions": {
+    "api/community.js": {
+      "runtime": "@vercel/node@3"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/community", "destination": "/api/community" }
+  ]
 }
