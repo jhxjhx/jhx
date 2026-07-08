@@ -106,7 +106,7 @@ async function doAuth() {
       var r1 = await callAPI('POST', '/auth/v1/signup', { email: email, password: pass });
       if (r1.code && r1.code !== 'SUCCESS') throw new Error(r1.message || '注册失败');
     }
-    var r2 = await callAPI('POST', '/auth/v1/signin', { loginType: 'EMAIL', email: email, password: password: pass });
+    var r2 = await callAPI('POST', '/auth/v1/signin', { loginType: 'EMAIL', email: email, password: pass });
     if (r2.code && r2.code !== 'SUCCESS') throw new Error(r2.message || '登录失败');
 
     localStorage.setItem('jhx_email', email);
