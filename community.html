@@ -14,16 +14,40 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
 .back-btn svg { width: 20px; height: 20px; }
 .back-title { font-size: 17px; font-weight: 600; }
-.container { padding: 16px 20px 80px; max-width: 600px; margin: 0 auto; }
+
+.tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 56px; background: var(--bg); z-index: 9; }
+.tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.container { padding: 16px 20px 80px; max-width: 650px; margin: 0 auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
 .post-box { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; }
 .post-box textarea { width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; padding: 12px; resize: vertical; min-height: 60px; outline: none; }
 .post-box textarea:focus { border-color: var(--accent); }
-.post-box .actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+.post-box .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.post-box .img-btn { padding: 6px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary); border-radius: 16px; font-size: 12px; cursor: pointer; }
+.post-box .img-btn:hover { border-color: var(--accent); color: var(--text); }
+.post-box .preview-img { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 8px; display: none; }
 .post-btn { padding: 8px 20px; background: var(--accent); color: #fff; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.post-item { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
-.post-item .author { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
-.post-item .content { font-size: 14px; line-height: 1.6; }
-.post-item .time { font-size: 11px; color: var(--text-secondary); margin-top: 8px; }
+
+.post-item { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.post-item .author { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.post-item .content { font-size: 14px; line-height: 1.6; word-break: break-word; }
+.post-item .post-img { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 8px; display: block; }
+.post-item .time { font-size: 11px; color: var(--text-secondary); margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+.post-item .comment-btn { font-size: 12px; color: var(--text-secondary); cursor: pointer; }
+.post-item .comment-btn:hover { color: var(--accent); }
+
+.comments { margin-top: 8px; padding-left: 12px; border-left: 2px solid rgba(255,255,255,0.06); }
+.comment { margin-top: 8px; padding: 6px 0; }
+.comment .c-author { font-size: 12px; color: var(--accent); font-weight: 600; }
+.comment .c-text { font-size: 13px; color: var(--text-secondary); margin-left: 4px; }
+.comment-input { display: flex; gap: 8px; margin-top: 8px; }
+.comment-input input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; color: var(--text); font-size: 13px; outline: none; }
+.comment-input button { padding: 6px 14px; background: var(--accent); color: #fff; border: none; border-radius: 16px; font-size: 12px; cursor: pointer; }
+
 .empty { text-align: center; color: var(--text-secondary); padding: 40px; font-size: 14px; }
 .login-hint { text-align: center; padding: 60px 20px; }
 .login-hint a { color: var(--accent); text-decoration: none; }
@@ -36,58 +60,162 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
   </button>
   <span class="back-title">社区</span>
 </div>
-<div class="container">
-  <div id="notLoggedIn" class="login-hint">
-    <p style="font-size:15px;color:var(--text-secondary);">请先登录后参与社区</p>
-    <p style="margin-top:12px;"><a href="login.html">去登录</a></p>
+
+<div id="notLoggedIn" class="login-hint">
+  <p style="font-size:15px;color:var(--text-secondary);">请先登录后参与社区</p>
+  <p style="margin-top:12px;"><a href="login.html">去登录</a></p>
+</div>
+
+<div id="loggedIn" style="display:none">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('msgboard')">留言板</div>
+    <div class="tab" onclick="switchTab('square')">动态广场</div>
   </div>
-  <div id="loggedIn" style="display:none">
-    <div class="post-box">
-      <textarea id="postContent" placeholder="分享你的想法..."></textarea>
-      <div class="actions"><button class="post-btn" onclick="addPost()">发布</button></div>
+
+  <!-- 留言板 -->
+  <div class="tab-content active" id="tab-msgboard">
+    <div class="container">
+      <div class="post-box">
+        <textarea id="msgText" placeholder="说点什么..."></textarea>
+        <div class="actions">
+          <span style="font-size:12px;color:var(--text-secondary);">所有用户可见</span>
+          <button class="post-btn" onclick="addMsg()">发送</button>
+        </div>
+      </div>
+      <div id="msgList"></div>
     </div>
-    <div id="postList"></div>
+  </div>
+
+  <!-- 动态广场 -->
+  <div class="tab-content" id="tab-square">
+    <div class="container">
+      <div class="post-box">
+        <textarea id="postText" placeholder="分享你的动态..."></textarea>
+        <img class="preview-img" id="previewImg">
+        <div class="actions">
+          <div>
+            <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="previewImage(event)">
+            <button class="img-btn" onclick="document.getElementById('imgFile').click()">+ 图片</button>
+          </div>
+          <button class="post-btn" onclick="addPost()">发布</button>
+        </div>
+      </div>
+      <div id="postList"></div>
+    </div>
   </div>
 </div>
 
 <script>
 var id = localStorage.getItem('jhx_id');
 var name = localStorage.getItem('jhx_name') || '';
+var currentTab = 'msgboard';
 
 if (id) {
   document.getElementById('notLoggedIn').style.display = 'none';
   document.getElementById('loggedIn').style.display = '';
+  loadMsgBoard();
   loadPosts();
 }
 
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.toggle('active', false); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.toggle('active', false); });
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function fmtTime(ts) {
+  var d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function displayAuthor(authorId, authorName) {
+  return authorName + ' (ID:' + authorId + ')';
+}
+
+// ===== 留言板 =====
+function addMsg() {
+  var text = document.getElementById('msgText').value.trim();
+  if (!text) return;
+  var msgs = JSON.parse(localStorage.getItem('jhx_msgboard') || '[]');
+  msgs.unshift({ authorId: id, authorName: name || '用户'+id, text: text, time: Date.now() });
+  localStorage.setItem('jhx_msgboard', JSON.stringify(msgs));
+  document.getElementById('msgText').value = '';
+  loadMsgBoard();
+}
+
+function loadMsgBoard() {
+  var msgs = JSON.parse(localStorage.getItem('jhx_msgboard') || '[]');
+  var list = document.getElementById('msgList');
+  if (msgs.length === 0) { list.innerHTML = '<div class="empty">暂无留言</div>'; return; }
+  list.innerHTML = msgs.map(function(m) {
+    return '<div class="post-item"><div class="author">' + displayAuthor(m.authorId, m.authorName) + '</div><div class="content">' + m.text + '</div><div class="time">' + fmtTime(m.time) + '</div></div>';
+  }).join('');
+}
+
+// ===== 动态广场 =====
+var imgData = null;
+
+function previewImage(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 500000) { alert('图片不能超过500KB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    imgData = ev.target.result;
+    document.getElementById('previewImg').src = imgData;
+    document.getElementById('previewImg').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
 function addPost() {
-  var content = document.getElementById('postContent').value.trim();
-  if (!content) return;
+  var text = document.getElementById('postText').value.trim();
+  if (!text && !imgData) return;
   var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
   posts.unshift({
-    authorId: id,
-    authorName: name || '用户' + id,
-    content: content,
-    time: Date.now()
+    authorId: id, authorName: name || '用户'+id,
+    text: text, image: imgData || '',
+    time: Date.now(), comments: []
   });
   localStorage.setItem('jhx_posts', JSON.stringify(posts));
-  document.getElementById('postContent').value = '';
+  document.getElementById('postText').value = '';
+  document.getElementById('previewImg').style.display = 'none';
+  document.getElementById('imgFile').value = '';
+  imgData = null;
   loadPosts();
 }
 
 function loadPosts() {
   var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
   var list = document.getElementById('postList');
-  if (posts.length === 0) {
-    list.innerHTML = '<div class="empty">暂无帖子，发第一条吧</div>';
-    return;
-  }
-  list.innerHTML = posts.map(function(p) {
-    var d = new Date(p.time);
-    var t = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-    var displayName = p.authorName + (p.authorId ? ' (ID:' + p.authorId + ')' : '');
-    return '<div class="post-item"><div class="author">' + displayName + '</div><div class="content">' + p.content + '</div><div class="time">' + t + '</div></div>';
+  if (posts.length === 0) { list.innerHTML = '<div class="empty">暂无动态</div>'; return; }
+  list.innerHTML = posts.map(function(p, pi) {
+    var imgHtml = p.image ? '<img class="post-img" src="' + p.image + '">' : '';
+    var commentsHtml = (p.comments || []).map(function(c) {
+      return '<div class="comment"><span class="c-author">' + displayAuthor(c.authorId, c.authorName) + '</span><span class="c-text">' + c.text + '</span></div>';
+    }).join('');
+    return '<div class="post-item"><div class="author">' + displayAuthor(p.authorId, p.authorName) + '</div><div class="content">' + (p.text || '') + '</div>' + imgHtml + '<div class="time"><span>' + fmtTime(p.time) + '</span><span class="comment-btn" onclick="toggleComment(' + pi + ')">评论 (' + (p.comments||[]).length + ')</span></div><div class="comments" id="comments-' + pi + '" style="display:none">' + commentsHtml + '<div class="comment-input"><input id="cin-' + pi + '" placeholder="写评论..."><button onclick="addComment(' + pi + ')">发送</button></div></div></div>';
   }).join('');
+}
+
+function toggleComment(pi) {
+  var el = document.getElementById('comments-' + pi);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function addComment(pi) {
+  var inp = document.getElementById('cin-' + pi);
+  var text = inp.value.trim();
+  if (!text) return;
+  var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
+  if (!posts[pi].comments) posts[pi].comments = [];
+  posts[pi].comments.push({ authorId: id, authorName: name || '用户'+id, text: text });
+  localStorage.setItem('jhx_posts', JSON.stringify(posts));
+  inp.value = '';
+  loadPosts();
+  document.getElementById('comments-' + pi).style.display = 'block';
 }
 </script>
 </body>
