@@ -103,15 +103,19 @@ async function doAuth() {
   btn.disabled = true; showMsg('请稍候...', '');
   try {
     if (isReg) {
-      await auth.signUpWithEmailAndPassword(uid + '@jhx.user', pass);
+      await auth.signUp({ username: uid, password: pass });
     }
-    await auth.signInWithEmailAndPassword(uid + '@jhx.user', pass);
+    await auth.signIn({ username: uid, password: pass });
     localStorage.setItem('jhx_id', uid);
     showMsg('成功！', 'success');
     showLoggedIn(uid);
   } catch(e) {
     var raw = e.code || e.message || JSON.stringify(e);
-    var err = '[DEBUG] ' + raw;
+    var err = raw;
+    if (raw.indexOf('EXIST') >= 0 || raw.indexOf('exist') >= 0 || raw.indexOf('ALREADY') >= 0) err = '该ID已注册';
+    else if (raw.indexOf('PASSWORD') >= 0 || raw.indexOf('password') >= 0) err = '密码错误';
+    else if (raw.indexOf('INVALID') >= 0) err = 'ID格式不正确';
+    else err = raw;
     showMsg(err, 'error'); btn.disabled = false;
   }
 }
