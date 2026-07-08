@@ -40,10 +40,10 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 <div class="container">
   <div class="avatar"></div>
   <div class="title" id="pageTitle">登录</div>
-  <div class="subtitle">使用6位数字ID登录</div>
+  <div class="subtitle">数据云端同步，跨设备使用</div>
   <div class="form" id="loginForm">
-    <div class="input-group"><label>6位数字ID</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric" pattern="[0-9]{6}"></div>
-    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少4位)"></div>
+    <div class="input-group"><label>6位数字ID (用户名)</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric"></div>
+    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少6位)"></div>
     <div class="input-group" id="extraGroup" style="display:none"><label>确认密码</label><input type="password" id="password2" placeholder="再次输入密码"></div>
     <button class="btn btn-primary" id="submitBtn" onclick="doAuth()">登录</button>
     <button class="btn btn-outline" id="switchBtn" onclick="toggleMode()">没有账号？去注册</button>
@@ -55,13 +55,27 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
   </div>
 </div>
 
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
 <script>
+var app, auth;
 var isReg = false;
 
 (function() {
   var id = localStorage.getItem('jhx_id');
   if (id) showLoggedIn(id);
 })();
+
+function waitSDK(cb) {
+  if (typeof cloudbase !== 'undefined') { cb(); return; }
+  var t = setInterval(function() {
+    if (typeof cloudbase !== 'undefined') { clearInterval(t); cb(); }
+  }, 100);
+}
+
+waitSDK(function() {
+  app = cloudbase.init({ env: 'music75444-d5gorwjxw305fd5a6' });
+  auth = app.auth();
+});
 
 function toggleMode() {
   isReg = !isReg;
@@ -77,45 +91,32 @@ function showMsg(t, type) {
   m.textContent = t; m.className = 'msg ' + (type || '');
 }
 
-function hash(pwd) {
-  var h = 0;
-  for (var i = 0; i < pwd.length; i++) { h = ((h << 5) - h) + pwd.charCodeAt(i); h |= 0; }
-  return Math.abs(h).toString(16);
-}
-
-function doAuth() {
+async function doAuth() {
+  if (!auth) { showMsg('服务加载中，请稍后再试', 'error'); return; }
   var uid = document.getElementById('uid').value.trim();
   var pass = document.getElementById('password').value;
   var btn = document.getElementById('submitBtn');
-
   if (!/^\d{6}$/.test(uid)) { showMsg('ID必须是6位数字', 'error'); return; }
-  if (!pass || pass.length < 4) { showMsg('密码至少4位', 'error'); return; }
+  if (!pass || pass.length < 6) { showMsg('密码至少6位', 'error'); return; }
   if (isReg && pass !== document.getElementById('password2').value) { showMsg('两次密码不一致', 'error'); return; }
 
   btn.disabled = true; showMsg('请稍候...', '');
-
-  setTimeout(function() {
-    try {
-      var store = JSON.parse(localStorage.getItem('jhx_users') || '{}');
-      var hpass = hash(pass + uid);
-
-      if (isReg) {
-        if (store[uid]) { showMsg('该ID已被注册', 'error'); btn.disabled = false; return; }
-        store[uid] = { pass: hpass, name: '用户' + uid };
-        localStorage.setItem('jhx_users', JSON.stringify(store));
-      } else {
-        if (!store[uid]) { showMsg('ID不存在，请先注册', 'error'); btn.disabled = false; return; }
-        if (store[uid].pass !== hpass) { showMsg('密码错误', 'error'); btn.disabled = false; return; }
-      }
-
-      localStorage.setItem('jhx_id', uid);
-      localStorage.setItem('jhx_name', store[uid].name || '用户' + uid);
-      showMsg(isReg ? '注册成功！' : '登录成功！', 'success');
-      showLoggedIn(uid);
-    } catch(e) {
-      showMsg('出错：' + e.message, 'error'); btn.disabled = false;
+  try {
+    if (isReg) {
+      await auth.signUpWithEmailAndPassword(uid + '@jhx.user', pass);
     }
-  }, 200);
+    await auth.signInWithEmailAndPassword(uid + '@jhx.user', pass);
+    localStorage.setItem('jhx_id', uid);
+    showMsg('成功！', 'success');
+    showLoggedIn(uid);
+  } catch(e) {
+    var raw = e.code || e.message || JSON.stringify(e);
+    var err = raw;
+    if (raw.indexOf('EXIST') >= 0 || raw.indexOf('exist') >= 0) err = '该ID已注册';
+    else if (raw.indexOf('PASSWORD') >= 0 || raw.indexOf('password') >= 0) err = '密码错误';
+    else err = raw;
+    showMsg(err, 'error'); btn.disabled = false;
+  }
 }
 
 function showLoggedIn(uid) {
@@ -125,11 +126,10 @@ function showLoggedIn(uid) {
 }
 
 function logout() {
+  if (auth) auth.signOut().catch(function(){});
   localStorage.removeItem('jhx_id');
   document.getElementById('loginForm').style.display = '';
   document.getElementById('userCard').style.display = 'none';
-  document.getElementById('uid').value = '';
-  document.getElementById('password').value = '';
   showMsg('已退出', 'success');
 }
 </script>
