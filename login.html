@@ -40,10 +40,10 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,"Pi
 <div class="container">
   <div class="avatar"></div>
   <div class="title" id="pageTitle">登录</div>
-  <div class="subtitle">云端同步，跨设备使用</div>
+  <div class="subtitle">6位数字ID登录</div>
   <div class="form" id="loginForm">
     <div class="input-group"><label>6位数字ID</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric"></div>
-    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少6位)"></div>
+    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少4位)"></div>
     <div class="input-group" id="extraGroup" style="display:none"><label>确认密码</label><input type="password" id="password2" placeholder="再次输入密码"></div>
     <button class="btn btn-primary" id="submitBtn" onclick="doAuth()">登录</button>
     <button class="btn btn-outline" id="switchBtn" onclick="toggleMode()">没有账号？去注册</button>
@@ -55,32 +55,13 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,"Pi
   </div>
 </div>
 
-<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
 <script>
-var app, auth, db;
 var isReg = false;
 
 (function() {
   var id = localStorage.getItem('jhx_id');
   if (id) showLoggedIn(id);
 })();
-
-function waitSDK(cb) {
-  if (typeof cloudbase !== 'undefined') { cb(); return; }
-  var t = setInterval(function() {
-    if (typeof cloudbase !== 'undefined') { clearInterval(t); cb(); }
-  }, 100);
-}
-
-waitSDK(function() {
-  app = cloudbase.init({
-  env: 'music75444-d5gorwjxw305fd5a6',
-  region: 'ap-shanghai',
-  accessKey: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlkMWRjMzFlLWI0ZDAtNDQ4Yi1hNzZmLWIwY2M2M2Q4MTQ5OCJ9.eyJpc3MiOiJodHRwczovL211c2ljNzU0NDQtZDVnb3J3anh3MzA1ZmQ1YTYuYXAtc2hhbmdoYWkudGNiLWFwaS50ZW5jZW50Y2xvdWRhcGkuY29tIiwic3ViIjoiYW5vbiIsImF1ZCI6Im11c2ljNzU0NDQtZDVnb3J3anh3MzA1ZmQ1YTYiLCJleHAiOjQwODcxNjc0NjksImlhdCI6MTc4MzQ4NDI2OSwibm9uY2UiOiJka3hkcVBiZFR2aTc3a3RYN3Q4UWR3IiwiYXRfaGFzaCI6ImRreGRxUGJkVHZpNzdrdFg3dDhRZHciLCJuYW1lIjoiQW5vbnltb3VzIiwic2NvcGUiOiJhbm9ueW1vdXMiLCJwcm9qZWN0X2lkIjoibXVzaWM3NTQ0NC1kNWdvcndqeHczMDVmZDVhNiIsIm1ldGEiOnsicGxhdGZvcm0iOiJQdWJsaXNoYWJsZUtleSJ9LCJ1c2VyX3R5cGUiOiIiLCJjbGllbnRfdHlwZSI6ImNsaWVudF91c2VyIiwiaXNfc3lzdGVtX2FkbWluIjpmYWxzZX0.OJbffWvlEaxqOuaKZ3RbOOKv7ONHi9CGg3vRniEng5n8yxfPbjebuzogjY9pd25i1zhynq4usmYatvJA55hfN7GXFtxRG6v4K9w7Q7c8wXZDotOXpyNltecz2Hl2g-abZLGuvaxuLN_0bhDH2X20wAGwWeI0j5ssyGFVQRBxNaRG7mhHSN7OgL84W025KcEJzX33gPmZd2-3Dqvch8MNT6Yt21CZS-Nj47BaZXaiHaCL0lnN9gGeqhdOowv8t_BXWPbOkOwjbX7Tk0k-q1wEZxQr10ocEGp8HU4chnpf-8zlat9zAxo1HbwtTJ5Hpn54DTaiBFXJ-XEJ-5A1OTdsXQ'
-});
-  auth = app.auth();
-  db = app.database();
-});
 
 function h(p) { var x = 0; for (var i = 0; i < p.length; i++) { x = ((x << 5) - x) + p.charCodeAt(i); x |= 0; } return Math.abs(x).toString(16); }
 
@@ -98,45 +79,32 @@ function showMsg(t, type) {
   m.textContent = t; m.className = 'msg ' + (type || '');
 }
 
-async function doAuth() {
-  if (!auth || !db) { showMsg('服务加载中，请稍后再试', 'error'); return; }
+function doAuth() {
   var uid = document.getElementById('uid').value.trim();
   var pass = document.getElementById('password').value;
   var btn = document.getElementById('submitBtn');
   if (!/^\d{6}$/.test(uid)) { showMsg('ID必须是6位数字', 'error'); return; }
-  if (!pass || pass.length < 6) { showMsg('密码至少6位', 'error'); return; }
+  if (!pass || pass.length < 4) { showMsg('密码至少4位', 'error'); return; }
   if (isReg && pass !== document.getElementById('password2').value) { showMsg('两次密码不一致', 'error'); return; }
 
-  btn.disabled = true; showMsg('连接云端...', '');
+  btn.disabled = true;
 
-  try {
-    // Anonymous login to get access
-    await auth.signInAnonymously();
-    
-    var hp = h(pass + uid);
-    var coll = db.collection('jhx_users');
+  var store = JSON.parse(localStorage.getItem('jhx_users') || '{}');
+  var hp = h(pass + uid);
 
-    if (isReg) {
-      // Check if ID already exists
-      var check = await coll.where({ customId: uid }).get();
-      if (check.data && check.data.length > 0) { showMsg('该ID已注册', 'error'); btn.disabled = false; return; }
-      // Create user record
-      await coll.add({ customId: uid, passHash: hp, name: '用户' + uid, createdAt: Date.now() });
-    } else {
-      // Verify credentials
-      var res = await coll.where({ customId: uid }).get();
-      if (!res.data || res.data.length === 0) { showMsg('ID不存在，请先注册', 'error'); btn.disabled = false; return; }
-      if (res.data[0].passHash !== hp) { showMsg('密码错误', 'error'); btn.disabled = false; return; }
-    }
-
-    localStorage.setItem('jhx_id', uid);
-    localStorage.setItem('jhx_name', (isReg ? '用户' + uid : (res.data[0].name || '用户' + uid)));
-    showMsg(isReg ? '注册成功！数据已上云' : '登录成功！', 'success');
-    showLoggedIn(uid);
-  } catch(e) {
-    showMsg('错误: ' + (e.message || e.code || '未知'), 'error');
-    btn.disabled = false;
+  if (isReg) {
+    if (store[uid]) { showMsg('该ID已注册', 'error'); btn.disabled = false; return; }
+    store[uid] = { pass: hp, name: '用户' + uid };
+    localStorage.setItem('jhx_users', JSON.stringify(store));
+  } else {
+    if (!store[uid]) { showMsg('ID不存在，请先注册', 'error'); btn.disabled = false; return; }
+    if (store[uid].pass !== hp) { showMsg('密码错误', 'error'); btn.disabled = false; return; }
   }
+
+  localStorage.setItem('jhx_id', uid);
+  localStorage.setItem('jhx_name', store[uid].name || '用户' + uid);
+  showMsg(isReg ? '注册成功！' : '登录成功！', 'success');
+  showLoggedIn(uid);
 }
 
 function showLoggedIn(uid) {
@@ -147,7 +115,6 @@ function showLoggedIn(uid) {
 
 function logout() {
   localStorage.removeItem('jhx_id');
-  localStorage.removeItem('jhx_name');
   document.getElementById('loginForm').style.display = '';
   document.getElementById('userCard').style.display = 'none';
   showMsg('已退出', 'success');
