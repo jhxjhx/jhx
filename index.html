@@ -313,6 +313,7 @@ body {
   <img class="avatar" src="avatar.jpg" alt="avatar">
   <div class="hero-text">
     <h1 id="heroName" contenteditable="true" onblur="saveHeroName()">75444 user</h1>
+    <p id="loginStatus" onclick="location.href='login.html'" style="cursor:pointer;font-size:14px;color:var(--text-secondary);margin-top:4px;">未登录</p>
   </div>
 </section>
 
@@ -356,21 +357,21 @@ body {
     <span>全部 &rsaquo;</span>
   </div>
   <div class="task-list">
-    <div class="task-card" onclick="location.href='login.html'">
+    <div class="task-card" onclick="gotoPage('music-home.html')">
       <div class="task-icon active">&#9679;</div>
       <div class="task-body">
         <div class="task-title">个人主页</div>
-        <div class="task-desc">即将开放</div>
+        <div class="task-desc">我的资料与动态</div>
       </div>
-      <div class="task-meta">细节</div>
+      <div class="task-meta">进入</div>
     </div>
-    <div class="task-card" onclick="location.href='login.html'">
+    <div class="task-card" onclick="gotoPage('login.html')">
       <div class="task-icon soon">&#9711;</div>
       <div class="task-body">
         <div class="task-title">我的动态</div>
         <div class="task-desc">即将开放</div>
       </div>
-      <div class="task-meta">细节</div>
+      <div class="task-meta">即将开放</div>
     </div>
   </div>
 </section>
@@ -392,15 +393,15 @@ body {
     <span>全部 &rsaquo;</span>
   </div>
   <div class="task-list">
-    <div class="task-card" onclick="location.href='login.html'">
+    <div class="task-card" onclick="gotoPage('login.html')">
       <div class="task-icon active">&#9679;</div>
       <div class="task-body">
         <div class="task-title">留言板</div>
         <div class="task-desc">分享你的想法</div>
       </div>
-      <div class="task-meta">即将开放</div>
+      <div class="task-meta">进入</div>
     </div>
-    <div class="task-card" onclick="location.href='login.html'">
+    <div class="task-card" onclick="gotoPage('login.html')">
       <div class="task-icon soon">&#9711;</div>
       <div class="task-body">
         <div class="task-title">动态广场</div>
@@ -557,10 +558,20 @@ function saveHeroName() {
 (function() {
   var email = localStorage.getItem('jhx_login');
   if (email) {
-    var bio = document.querySelector('.hero-text p');
-    if (bio) bio.textContent = email;
+    var el = document.getElementById('loginStatus');
+    if (el) { el.textContent = email; el.onclick = null; el.style.cursor = 'default'; }
   }
 })();
+
+function gotoPage(url) {
+  var email = localStorage.getItem('jhx_login');
+  // If going to login page but already logged in, go to community instead
+  if (url === 'login.html' && email) {
+    alert('已登录：' + email);
+    return;
+  }
+  location.href = url;
+}
 </script>
 </body>
 </html>
