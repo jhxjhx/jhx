@@ -103,9 +103,9 @@ async function doAuth() {
   btn.disabled = true; showMsg('请稍候...', '');
   try {
     if (isReg) {
-      await auth.signUp({ username: uid, password: pass });
+      await auth.signUp({ loginType: 'USERNAME', username: uid, password: pass });
     }
-    await auth.signIn({ username: uid, password: pass });
+    await auth.signIn({ loginType: 'USERNAME', username: uid, password: pass });
     localStorage.setItem('jhx_id', uid);
     showMsg('成功！', 'success');
     showLoggedIn(uid);
