@@ -111,10 +111,7 @@ async function doAuth() {
     showLoggedIn(uid);
   } catch(e) {
     var raw = e.code || e.message || JSON.stringify(e);
-    var err = raw;
-    if (raw.indexOf('EXIST') >= 0 || raw.indexOf('exist') >= 0) err = '该ID已注册';
-    else if (raw.indexOf('PASSWORD') >= 0 || raw.indexOf('password') >= 0) err = '密码错误';
-    else err = raw;
+    var err = '[DEBUG] ' + raw;
     showMsg(err, 'error'); btn.disabled = false;
   }
 }
