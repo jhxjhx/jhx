@@ -29,30 +29,26 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 .msg { margin-top: 12px; font-size: 13px; text-align: center; min-height: 20px; }
 .msg.error { color: #ff4d4f; } .msg.success { color: #52c41a; }
 .user-card { margin-top: 24px; text-align: center; display: none; }
-.hint { font-size: 12px; color: var(--text-secondary); text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
-
 <div class="back-bar">
   <button class="back-btn" onclick="location.href='index.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
 </div>
-
 <div class="container">
   <div class="avatar"></div>
-  <div class="title">登录</div>
-  <div class="subtitle">首次登录自动注册，无需密码</div>
-
+  <div class="title" id="pageTitle">登录</div>
+  <div class="subtitle">首次登录自动注册</div>
   <div class="form" id="loginForm">
     <div class="input-group"><label>邮箱</label><input type="email" id="email" placeholder="请输入邮箱"></div>
-    <div class="input-group" id="codeGroup" style="display:none"><label>验证码</label><input type="text" id="code" placeholder="邮箱收到的6位验证码" maxlength="6"></div>
-    <button class="btn btn-primary" id="submitBtn" onclick="doLogin()">发送验证码</button>
-    <div class="hint" id="hint">首次使用？输入邮箱直接登录，自动注册</div>
+    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少6位)"></div>
+    <div class="input-group" id="extraGroup" style="display:none"><label>确认密码</label><input type="password" id="password2" placeholder="再次输入密码"></div>
+    <button class="btn btn-primary" id="submitBtn" onclick="doAuth()">登录</button>
+    <button class="btn btn-outline" id="switchBtn" onclick="toggleMode()">没有账号？去注册</button>
     <div class="msg" id="msg"></div>
   </div>
-
   <div class="user-card" id="userCard">
     <div style="font-size:16px;font-weight:600;" id="userEmail"></div>
     <button class="btn btn-outline" style="margin-top:16px;width:auto;padding:10px 24px;" onclick="logout()">退出登录</button>
@@ -62,87 +58,63 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 <script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
 <script>
 var app, auth;
-var verificationInfo = null;
-
-function waitForSDK() {
-  return new Promise(function(resolve) {
-    if (typeof cloudbase !== 'undefined') { resolve(); return; }
-    var n = 0;
-    var t = setInterval(function() {
-      n++;
-      if (typeof cloudbase !== 'undefined') { clearInterval(t); resolve(); }
-      if (n > 50) { clearInterval(t); resolve(); }
-    }, 200);
-  });
-}
-
-async function initSDK() {
-  await waitForSDK();
-  if (typeof cloudbase === 'undefined') { showMsg('SDK加载失败，请刷新重试', 'error'); return false; }
-  try {
-    app = cloudbase.init({
-      env: 'music75444-d5gorwjxw305fd5a6',
-      region: 'ap-shanghai',
-      accessKey: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlkMWRjMzFlLWI0ZDAtNDQ4Yi1hNzZmLWIwY2M2M2Q4MTQ5OCJ9.eyJpc3MiOiJodHRwczovL211c2ljNzU0NDQtZDVnb3J3anh3MzA1ZmQ1YTYuYXAtc2hhbmdoYWkudGNiLWFwaS50ZW5jZW50Y2xvdWRhcGkuY29tIiwic3ViIjoiYW5vbiIsImF1ZCI6Im11c2ljNzU0NDQtZDVnb3J3anh3MzA1ZmQ1YTYiLCJleHAiOjQwODcxNjc0NjksImlhdCI6MTc4MzQ4NDI2OSwibm9uY2UiOiJka3hkcVBiZFR2aTc3a3RYN3Q4UWR3IiwiYXRfaGFzaCI6ImRreGRxUGJkVHZpNzdrdFg3dDhRZHciLCJuYW1lIjoiQW5vbnltb3VzIiwic2NvcGUiOiJhbm9ueW1vdXMiLCJwcm9qZWN0X2lkIjoibXVzaWM3NTQ0NC1kNWdvcndqeHczMDVmZDVhNiIsIm1ldGEiOnsicGxhdGZvcm0iOiJQdWJsaXNoYWJsZUtleSJ9LCJ1c2VyX3R5cGUiOiIiLCJjbGllbnRfdHlwZSI6ImNsaWVudF91c2VyIiwiaXNfc3lzdGVtX2FkbWluIjpmYWxzZX0.OJbffWvlEaxqOuaKZ3RbOOKv7ONHi9CGg3vRniEng5n8yxfPbjebuzogjY9pd25i1zhynq4usmYatvJA55hfN7GXFtxRG6v4K9w7Q7c8wXZDotOXpyNltecz2Hl2g-abZLGuvaxuLN_0bhDH2X20wAGwWeI0j5ssyGFVQRBxNaRG7mhHSN7OgL84W025KcEJzX33gPmZd2-3Dqvch8MNT6Yt21CZS-Nj47BaZXaiHaCL0lnN9gGeqhdOowv8t_BXWPbOkOwjbX7Tk0k-q1wEZxQr10ocEGp8HU4chnpf-8zlat9zAxo1HbwtTJ5Hpn54DTaiBFXJ-XEJ-5A1OTdsXQ'
-    });
-    auth = app.auth();
-    return true;
-  } catch(e) {
-    showMsg('初始化失败: ' + e.message, 'error');
-    return false;
-  }
-}
+var isReg = false;
 
 (function() {
   var e = localStorage.getItem('jhx_email');
-  if (e) { showLoggedIn(e); }
-  initSDK();
+  if (e) showLoggedIn(e);
 })();
+
+function waitSDK(cb) {
+  if (typeof cloudbase !== 'undefined') { cb(); return; }
+  var t = setInterval(function() {
+    if (typeof cloudbase !== 'undefined') { clearInterval(t); cb(); }
+  }, 100);
+}
+
+waitSDK(function() {
+  app = cloudbase.init({ env: 'music75444-d5gorwjxw305fd5a6' });
+  auth = app.auth();
+});
+
+function toggleMode() {
+  isReg = !isReg;
+  document.getElementById('pageTitle').textContent = isReg ? '注册' : '登录';
+  document.getElementById('submitBtn').textContent = isReg ? '注册' : '登录';
+  document.getElementById('switchBtn').textContent = isReg ? '已有账号？去登录' : '没有账号？去注册';
+  document.getElementById('extraGroup').style.display = isReg ? '' : 'none';
+  showMsg('');
+}
 
 function showMsg(t, type) {
   var m = document.getElementById('msg');
   m.textContent = t; m.className = 'msg ' + (type || '');
 }
 
-async function doLogin() {
-  if (!auth) { showMsg('SDK未就绪，请稍后重试', 'error'); return; }
+async function doAuth() {
+  if (!auth) { showMsg('服务加载中，请稍后再试', 'error'); return; }
   var email = document.getElementById('email').value.trim();
-  if (!email) { showMsg('请输入邮箱', 'error'); return; }
+  var pass = document.getElementById('password').value;
   var btn = document.getElementById('submitBtn');
+  if (!email || !pass) { showMsg('请填写邮箱和密码', 'error'); return; }
+  if (pass.length < 6) { showMsg('密码至少6位', 'error'); return; }
+  if (isReg && pass !== document.getElementById('password2').value) { showMsg('两次密码不一致', 'error'); return; }
 
-  // Step 1: Send verification code
-  if (!verificationInfo) {
-    btn.disabled = true; showMsg('发送中...', '');
-    try {
-      verificationInfo = await auth.getVerification({ email: email });
-      document.getElementById('codeGroup').style.display = '';
-      document.getElementById('email').readOnly = true;
-      btn.textContent = '登录';
-      document.getElementById('hint').textContent = '输入验证码后点击登录，新用户自动注册';
-      showMsg('验证码已发送到 ' + email, 'success');
-    } catch(e) {
-      showMsg('发送失败: ' + (e.message || '重试'), 'error');
-    }
-    btn.disabled = false;
-    return;
-  }
-
-  // Step 2: Login with code
-  var code = document.getElementById('code').value.trim();
-  if (!code || code.length < 4) { showMsg('请输入完整验证码', 'error'); return; }
-  btn.disabled = true; showMsg('验证中...', '');
+  btn.disabled = true; showMsg('请稍候...', '');
   try {
-    await auth.signInWithEmail({
-      verificationInfo: verificationInfo,
-      verificationCode: code,
-      email: email
-    });
+    if (isReg) {
+      await auth.signUpWithEmailAndPassword(email, pass);
+    }
+    await auth.signInWithEmailAndPassword(email, pass);
     localStorage.setItem('jhx_email', email);
-    showMsg('登录成功！', 'success');
+    showMsg('成功！', 'success');
     showLoggedIn(email);
   } catch(e) {
-    showMsg('验证失败: ' + (e.message || '验证码错误或过期'), 'error');
-    btn.disabled = false;
+    var err = (e && e.message) || '操作失败';
+    if (err.indexOf('exist') >= 0 || err.indexOf('already') >= 0) err = '该邮箱已注册，请直接登录';
+    if (err.indexOf('password') >= 0 || err.indexOf('invalid') >= 0) err = '密码错误';
+    if (err.indexOf('email') >= 0) err = '邮箱格式错误';
+    showMsg(err, 'error'); btn.disabled = false;
   }
 }
 
@@ -154,16 +126,11 @@ function showLoggedIn(email) {
 
 function logout() {
   if (auth) auth.signOut().catch(function(){});
-  ['jhx_email','jhx_token','jhx_refresh'].forEach(function(k) { localStorage.removeItem(k); });
+  localStorage.removeItem('jhx_email');
   document.getElementById('loginForm').style.display = '';
   document.getElementById('userCard').style.display = 'none';
   document.getElementById('email').value = '';
-  document.getElementById('email').readOnly = false;
-  document.getElementById('code').value = '';
-  document.getElementById('codeGroup').style.display = 'none';
-  document.getElementById('submitBtn').textContent = '发送验证码';
-  document.getElementById('hint').textContent = '首次使用？输入邮箱直接登录，自动注册';
-  verificationInfo = null;
+  document.getElementById('password').value = '';
   showMsg('已退出', 'success');
 }
 </script>
