@@ -542,6 +542,7 @@ function installApp() {
   if (n) document.getElementById('heroName').textContent = n;
 })();
 
+
 function saveHeroName() {
   var el = document.getElementById('heroName');
   var n = el.textContent.trim() || '75444 user';
@@ -549,5 +550,17 @@ function saveHeroName() {
 }
 </script>
 
+
+
+
+<script>
+(function() {
+  var email = localStorage.getItem('jhx_login');
+  if (email) {
+    var bio = document.querySelector('.hero-text p');
+    if (bio) bio.textContent = email;
+  }
+})();
+</script>
 </body>
 </html>
