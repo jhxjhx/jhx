@@ -9,7 +9,7 @@
 <style>
 :root { --bg: #121214; --bg-card: #1c1c1e; --text: #f5f5f7; --text-secondary: #98989d; --accent: #fc3c44; --radius: 14px; }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
 .back-bar { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
 .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
 .back-btn svg { width: 20px; height: 20px; }
@@ -40,9 +40,9 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 <div class="container">
   <div class="avatar"></div>
   <div class="title" id="pageTitle">登录</div>
-  <div class="subtitle">数据云端同步，跨设备使用</div>
+  <div class="subtitle">云端同步，跨设备使用</div>
   <div class="form" id="loginForm">
-    <div class="input-group"><label>6位数字ID (用户名)</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric"></div>
+    <div class="input-group"><label>6位数字ID</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric"></div>
     <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少6位)"></div>
     <div class="input-group" id="extraGroup" style="display:none"><label>确认密码</label><input type="password" id="password2" placeholder="再次输入密码"></div>
     <button class="btn btn-primary" id="submitBtn" onclick="doAuth()">登录</button>
@@ -57,7 +57,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 
 <script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
 <script>
-var app, auth;
+var app, auth, db;
 var isReg = false;
 
 (function() {
@@ -75,7 +75,10 @@ function waitSDK(cb) {
 waitSDK(function() {
   app = cloudbase.init({ env: 'music75444-d5gorwjxw305fd5a6' });
   auth = app.auth();
+  db = app.database();
 });
+
+function h(p) { var x = 0; for (var i = 0; i < p.length; i++) { x = ((x << 5) - x) + p.charCodeAt(i); x |= 0; } return Math.abs(x).toString(16); }
 
 function toggleMode() {
   isReg = !isReg;
@@ -92,7 +95,7 @@ function showMsg(t, type) {
 }
 
 async function doAuth() {
-  if (!auth) { showMsg('服务加载中，请稍后再试', 'error'); return; }
+  if (!auth || !db) { showMsg('服务加载中，请稍后再试', 'error'); return; }
   var uid = document.getElementById('uid').value.trim();
   var pass = document.getElementById('password').value;
   var btn = document.getElementById('submitBtn');
@@ -100,19 +103,35 @@ async function doAuth() {
   if (!pass || pass.length < 6) { showMsg('密码至少6位', 'error'); return; }
   if (isReg && pass !== document.getElementById('password2').value) { showMsg('两次密码不一致', 'error'); return; }
 
-  btn.disabled = true; showMsg('请稍候...', '');
+  btn.disabled = true; showMsg('连接云端...', '');
+
   try {
+    // Anonymous login to get access
+    await auth.signInAnonymously();
+    
+    var hp = h(pass + uid);
+    var coll = db.collection('jhx_users');
+
     if (isReg) {
-      await auth.signUp({ loginType: 'USERNAME', username: uid, password: pass });
+      // Check if ID already exists
+      var check = await coll.where({ customId: uid }).get();
+      if (check.data && check.data.length > 0) { showMsg('该ID已注册', 'error'); btn.disabled = false; return; }
+      // Create user record
+      await coll.add({ customId: uid, passHash: hp, name: '用户' + uid, createdAt: Date.now() });
+    } else {
+      // Verify credentials
+      var res = await coll.where({ customId: uid }).get();
+      if (!res.data || res.data.length === 0) { showMsg('ID不存在，请先注册', 'error'); btn.disabled = false; return; }
+      if (res.data[0].passHash !== hp) { showMsg('密码错误', 'error'); btn.disabled = false; return; }
     }
-    await auth.signIn({ loginType: 'USERNAME', username: uid, password: pass });
+
     localStorage.setItem('jhx_id', uid);
-    showMsg('成功！', 'success');
+    localStorage.setItem('jhx_name', (isReg ? '用户' + uid : (res.data[0].name || '用户' + uid)));
+    showMsg(isReg ? '注册成功！数据已上云' : '登录成功！', 'success');
     showLoggedIn(uid);
   } catch(e) {
-    var raw = e.code || e.message || JSON.stringify(e);
-    var err = raw;
-    showMsg(err, 'error'); btn.disabled = false;
+    showMsg('错误: ' + (e.message || e.code || '未知'), 'error');
+    btn.disabled = false;
   }
 }
 
@@ -123,8 +142,8 @@ function showLoggedIn(uid) {
 }
 
 function logout() {
-  if (auth) auth.signOut().catch(function(){});
   localStorage.removeItem('jhx_id');
+  localStorage.removeItem('jhx_name');
   document.getElementById('loginForm').style.display = '';
   document.getElementById('userCard').style.display = 'none';
   showMsg('已退出', 'success');
