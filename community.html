@@ -101,17 +101,13 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,"Pi
 <script>
 var id = localStorage.getItem('jhx_id');
 var name = localStorage.getItem('jhx_name') || '';
-var TOKEN = localStorage.getItem('gh_token') || prompt('请输入GitHub Token以启用社区功能：
+var VERCEL_API = 'https://jhx-api.vercel.app/api';
 
-(在 github.com/settings/tokens 生成，勾选repo权限)');
-if (TOKEN) localStorage.setItem('gh_token', TOKEN);
-var REPO = 'jhxjhx/jhx';
-var FILE = 'community-data.json';
-var RAW = 'https://raw.githubusercontent.com/' + REPO + '/main/' + FILE;
-var API = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE;
+var RAW = 'https://raw.githubusercontent.com/jhxjhx/jhx/main/community-data.json';
+var RAW = 'https://raw.githubusercontent.com/jhxjhx/jhx/main/community-data.json';
+
 var currentTab = 'msgboard';
 var dataCache = { msgboard: [], posts: [] };
-var fileSha = null;
 var imgData = null;
 
 if (id) {
@@ -120,21 +116,11 @@ if (id) {
   loadAll();
 }
 
-async function ghGet(url) {
-  var r = await fetch(url, { headers: { Authorization: 'Bearer ' + TOKEN } });
-  return r.json();
-}
-
 async function loadAll() {
   try {
-    var res = await fetch(API, { headers: { Authorization: 'Bearer ' + TOKEN } });
-    var json = await res.json();
-    if (json.sha) fileSha = json.sha;
     var raw = await fetch(RAW);
     dataCache = await raw.json();
-  } catch(e) {
-    // Use empty cache
-  }
+  } catch(e) {}
   renderAll();
 }
 
@@ -166,16 +152,12 @@ function renderAll() {
 
 async function saveData() {
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(dataCache))));
-  var body = { message: 'community update', content: content, branch: 'main' };
-  if (fileSha) body.sha = fileSha;
-  var r = await fetch(API, {
-    method: 'PUT',
-    headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+  await fetch(VERCEL_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: content })
   });
-  var j = await r.json();
-  if (j.content && j.content.sha) fileSha = j.content.sha;
-  else { await loadAll(); fileSha = null; await saveData(); }
+  await loadAll();
 }
 
 function fmtTime(ts) {
