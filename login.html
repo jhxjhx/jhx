@@ -136,10 +136,17 @@ body {
 
 <script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
 <script>
-var app = cloudbase.init({
-  env: 'music75444-d5gorwjxw305fd5a6'
-});
-var auth = app.auth();
+var app, auth, authReady = false;
+
+try {
+  app = cloudbase.init({
+    env: 'music75444-d5gorwjxw305fd5a6'
+  });
+  auth = app.auth();
+  authReady = true;
+} catch(e) {
+  console.error('CloudBase init failed:', e);
+}
 
 var isRegister = false;
 
@@ -160,6 +167,8 @@ function showMsg(text, type) {
 }
 
 async function handleSubmit() {
+  if (!authReady) { showMsg('服务未就绪，请刷新页面重试', 'error'); return; }
+
   var email = document.getElementById('email').value.trim();
   var pass = document.getElementById('password').value;
   var btn = document.getElementById('submitBtn');
@@ -181,11 +190,13 @@ async function handleSubmit() {
       await auth.signInWithEmailAndPassword(email, pass);
       showMsg('登录成功', 'success');
     }
+    localStorage.setItem('jhx_login', email);
     onLogin(email);
   } catch (e) {
-    var err = e.message || '操作失败';
-    if (err.includes('already exists')) err = '该邮箱已注册';
-    if (err.includes('invalid')) err = '邮箱或密码错误';
+    var err = (e && e.message) || '操作失败，请重试';
+    if (err.indexOf('already exists') >= 0) err = '该邮箱已注册';
+    if (err.indexOf('invalid') >= 0 || err.indexOf('password') >= 0) err = '邮箱或密码错误';
+    if (err.indexOf('not found') >= 0) err = '账号不存在，请先注册';
     showMsg(err, 'error');
     btn.disabled = false;
   }
