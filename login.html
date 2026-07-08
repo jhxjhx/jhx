@@ -110,10 +110,12 @@ async function doAuth() {
     showMsg('成功！', 'success');
     showLoggedIn(email);
   } catch(e) {
-    var err = (e && e.message) || '操作失败';
-    if (err.indexOf('exist') >= 0 || err.indexOf('already') >= 0) err = '该邮箱已注册，请直接登录';
-    if (err.indexOf('password') >= 0 || err.indexOf('invalid') >= 0) err = '密码错误';
-    if (err.indexOf('email') >= 0) err = '邮箱格式错误';
+    var raw = (e && e.message) || (e && e.toString()) || '操作失败';
+    var err = raw;
+    if (raw.indexOf('exist') >= 0 || raw.indexOf('already') >= 0) err = '该邮箱已注册，请直接登录';
+    else if (raw.indexOf('password') >= 0 || raw.indexOf('invalid') >= 0) err = '密码错误';
+    else if (raw.indexOf('email') >= 0) err = '邮箱格式错误';
+    else err = raw + ' [' + (e && e.code || '') + ']';
     showMsg(err, 'error'); btn.disabled = false;
   }
 }
