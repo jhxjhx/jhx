@@ -324,7 +324,7 @@ input#avatarUpload { display: none; }
   <div class="profile-avatar" id="profileAvatar" style="background: url(avatar.jpg) center/cover;" onclick="document.getElementById('avatarUpload').click()"></div>
   <div class="profile-info">
     <h2 id="profileName" onclick="editName()">lonnybreauxxx</h2>
-    <div class="profile-bio">691小时</div>
+    <div class="profile-bio" id="profileIdDisplay"></div>
   </div>
 </div>
 
@@ -467,7 +467,7 @@ function closeModal(e) {
 <script>
 // Load saved profile
 (function() {
-  var savedName = localStorage.getItem('jhx_name');
+  var savedName = localStorage.getItem('jhx_name') || '用户' + (localStorage.getItem('jhx_id') || '');
   var savedAvatar = localStorage.getItem('jhx_avatar');
   if (savedName) document.getElementById('profileName').textContent = savedName;
   if (savedAvatar) document.getElementById('profileAvatar').style.backgroundImage = 'url(' + savedAvatar + ')';
@@ -497,6 +497,8 @@ function saveName() {
   if (!input) return;
   var name = input.value.trim() || 'lonnybreauxxx';
   document.getElementById('profileName').textContent = name;
+    var id = localStorage.getItem('jhx_id');
+    if (id) document.getElementById('profileIdDisplay').textContent = 'ID: ' + id;
   localStorage.setItem('jhx_name', name);
 }
 </script>
