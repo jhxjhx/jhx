@@ -9,20 +9,17 @@
 <style>
 :root { --bg: #121214; --bg-card: #1c1c1e; --text: #f5f5f7; --text-secondary: #98989d; --accent: #fc3c44; --radius: 14px; }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
 .back-bar { padding: 16px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; background: rgba(18,18,20,0.9); backdrop-filter: blur(10px); z-index: 10; }
 .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
 .back-btn svg { width: 20px; height: 20px; }
 .back-title { font-size: 17px; font-weight: 600; }
-
 .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 56px; background: var(--bg); z-index: 9; }
-.tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
 .container { padding: 16px 20px 80px; max-width: 650px; margin: 0 auto; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
 .post-box { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; }
 .post-box textarea { width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; padding: 12px; resize: vertical; min-height: 60px; outline: none; }
 .post-box textarea:focus { border-color: var(--accent); }
@@ -31,15 +28,14 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 .post-box .img-btn:hover { border-color: var(--accent); color: var(--text); }
 .post-box .preview-img { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 8px; display: none; }
 .post-btn { padding: 8px 20px; background: var(--accent); color: #fff; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
-
+.refresh-row { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+.refresh-btn { padding: 4px 12px; background: transparent; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; font-size: 12px; cursor: pointer; }
 .post-item { background: var(--bg-card); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
 .post-item .author { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 .post-item .content { font-size: 14px; line-height: 1.6; word-break: break-word; }
 .post-item .post-img { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 8px; display: block; }
 .post-item .time { font-size: 11px; color: var(--text-secondary); margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
 .post-item .comment-btn { font-size: 12px; color: var(--text-secondary); cursor: pointer; }
-.post-item .comment-btn:hover { color: var(--accent); }
-
 .comments { margin-top: 8px; padding-left: 12px; border-left: 2px solid rgba(255,255,255,0.06); }
 .comment { margin-top: 8px; padding: 6px 0; }
 .comment .c-author { font-size: 12px; color: var(--accent); font-weight: 600; }
@@ -47,7 +43,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 .comment-input { display: flex; gap: 8px; margin-top: 8px; }
 .comment-input input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; color: var(--text); font-size: 13px; outline: none; }
 .comment-input button { padding: 6px 14px; background: var(--accent); color: #fff; border: none; border-radius: 16px; font-size: 12px; cursor: pointer; }
-
 .empty { text-align: center; color: var(--text-secondary); padding: 40px; font-size: 14px; }
 .login-hint { text-align: center; padding: 60px 20px; }
 .login-hint a { color: var(--accent); text-decoration: none; }
@@ -71,22 +66,19 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
     <div class="tab active" onclick="switchTab('msgboard')">留言板</div>
     <div class="tab" onclick="switchTab('square')">动态广场</div>
   </div>
-
-  <!-- 留言板 -->
   <div class="tab-content active" id="tab-msgboard">
     <div class="container">
       <div class="post-box">
         <textarea id="msgText" placeholder="说点什么..."></textarea>
         <div class="actions">
-          <span style="font-size:12px;color:var(--text-secondary);">所有用户可见</span>
+          <span style="font-size:12px;color:var(--text-secondary);">云端共享</span>
           <button class="post-btn" onclick="addMsg()">发送</button>
         </div>
       </div>
+      <div class="refresh-row"><button class="refresh-btn" onclick="loadAll()">刷新</button></div>
       <div id="msgList"></div>
     </div>
   </div>
-
-  <!-- 动态广场 -->
   <div class="tab-content" id="tab-square">
     <div class="container">
       <div class="post-box">
@@ -100,6 +92,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
           <button class="post-btn" onclick="addPost()">发布</button>
         </div>
       </div>
+      <div class="refresh-row"><button class="refresh-btn" onclick="loadAll()">刷新</button></div>
       <div id="postList"></div>
     </div>
   </div>
@@ -108,21 +101,81 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, "P
 <script>
 var id = localStorage.getItem('jhx_id');
 var name = localStorage.getItem('jhx_name') || '';
+var TOKEN = localStorage.getItem('gh_token') || prompt('请输入GitHub Token以启用社区功能：
+
+(在 github.com/settings/tokens 生成，勾选repo权限)');
+if (TOKEN) localStorage.setItem('gh_token', TOKEN);
+var REPO = 'jhxjhx/jhx';
+var FILE = 'community-data.json';
+var RAW = 'https://raw.githubusercontent.com/' + REPO + '/main/' + FILE;
+var API = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE;
 var currentTab = 'msgboard';
+var dataCache = { msgboard: [], posts: [] };
+var fileSha = null;
+var imgData = null;
 
 if (id) {
   document.getElementById('notLoggedIn').style.display = 'none';
   document.getElementById('loggedIn').style.display = '';
-  loadMsgBoard();
-  loadPosts();
+  loadAll();
 }
 
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.toggle('active', false); });
-  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.toggle('active', false); });
-  event.target.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
+async function ghGet(url) {
+  var r = await fetch(url, { headers: { Authorization: 'Bearer ' + TOKEN } });
+  return r.json();
+}
+
+async function loadAll() {
+  try {
+    var res = await fetch(API, { headers: { Authorization: 'Bearer ' + TOKEN } });
+    var json = await res.json();
+    if (json.sha) fileSha = json.sha;
+    var raw = await fetch(RAW);
+    dataCache = await raw.json();
+  } catch(e) {
+    // Use empty cache
+  }
+  renderAll();
+}
+
+function renderAll() {
+  // MsgBoard
+  var msgs = dataCache.msgboard || [];
+  var ml = document.getElementById('msgList');
+  if (msgs.length === 0) { ml.innerHTML = '<div class="empty">暂无留言</div>'; }
+  else {
+    ml.innerHTML = msgs.map(function(m) {
+      return '<div class="post-item"><div class="author">' + (m.authorName||'') + ' (ID:' + m.authorId + ')</div><div class="content">' + m.text + '</div><div class="time">' + fmtTime(m.time) + '</div></div>';
+    }).join('');
+  }
+
+  // Posts
+  var posts = dataCache.posts || [];
+  var pl = document.getElementById('postList');
+  if (posts.length === 0) { pl.innerHTML = '<div class="empty">暂无动态</div>'; }
+  else {
+    pl.innerHTML = posts.map(function(p, pi) {
+      var imgHtml = p.image ? '<img class="post-img" src="' + p.image + '">' : '';
+      var cs = (p.comments || []).map(function(c) {
+        return '<div class="comment"><span class="c-author">' + (c.authorName||'') + '</span><span class="c-text">' + c.text + '</span></div>';
+      }).join('');
+      return '<div class="post-item"><div class="author">' + (p.authorName||'') + ' (ID:' + p.authorId + ')</div><div class="content">' + (p.text||'') + '</div>' + imgHtml + '<div class="time"><span>' + fmtTime(p.time) + '</span><span class="comment-btn" onclick="toggleComment(' + pi + ')">评论 (' + (p.comments||[]).length + ')</span></div><div class="comments" id="comments-' + pi + '" style="display:none">' + cs + '<div class="comment-input"><input id="cin-' + pi + '" placeholder="写评论..."><button onclick="addComment(' + pi + ')">发送</button></div></div></div>';
+    }).join('');
+  }
+}
+
+async function saveData() {
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(dataCache))));
+  var body = { message: 'community update', content: content, branch: 'main' };
+  if (fileSha) body.sha = fileSha;
+  var r = await fetch(API, {
+    method: 'PUT',
+    headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  var j = await r.json();
+  if (j.content && j.content.sha) fileSha = j.content.sha;
+  else { await loadAll(); fileSha = null; await saveData(); }
 }
 
 function fmtTime(ts) {
@@ -130,33 +183,25 @@ function fmtTime(ts) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
-function displayAuthor(authorId, authorName) {
-  return authorName + ' (ID:' + authorId + ')';
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
 }
 
-// ===== 留言板 =====
-function addMsg() {
+// MsgBoard
+async function addMsg() {
   var text = document.getElementById('msgText').value.trim();
   if (!text) return;
-  var msgs = JSON.parse(localStorage.getItem('jhx_msgboard') || '[]');
-  msgs.unshift({ authorId: id, authorName: name || '用户'+id, text: text, time: Date.now() });
-  localStorage.setItem('jhx_msgboard', JSON.stringify(msgs));
+  dataCache.msgboard.unshift({ authorId: id, authorName: name||'用户'+id, text: text, time: Date.now() });
   document.getElementById('msgText').value = '';
-  loadMsgBoard();
+  await saveData();
+  renderAll();
 }
 
-function loadMsgBoard() {
-  var msgs = JSON.parse(localStorage.getItem('jhx_msgboard') || '[]');
-  var list = document.getElementById('msgList');
-  if (msgs.length === 0) { list.innerHTML = '<div class="empty">暂无留言</div>'; return; }
-  list.innerHTML = msgs.map(function(m) {
-    return '<div class="post-item"><div class="author">' + displayAuthor(m.authorId, m.authorName) + '</div><div class="content">' + m.text + '</div><div class="time">' + fmtTime(m.time) + '</div></div>';
-  }).join('');
-}
-
-// ===== 动态广场 =====
-var imgData = null;
-
+// Posts
 function previewImage(e) {
   var file = e.target.files[0];
   if (!file) return;
@@ -170,34 +215,16 @@ function previewImage(e) {
   reader.readAsDataURL(file);
 }
 
-function addPost() {
+async function addPost() {
   var text = document.getElementById('postText').value.trim();
   if (!text && !imgData) return;
-  var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
-  posts.unshift({
-    authorId: id, authorName: name || '用户'+id,
-    text: text, image: imgData || '',
-    time: Date.now(), comments: []
-  });
-  localStorage.setItem('jhx_posts', JSON.stringify(posts));
+  dataCache.posts.unshift({ authorId: id, authorName: name||'用户'+id, text: text, image: imgData||'', time: Date.now(), comments: [] });
   document.getElementById('postText').value = '';
   document.getElementById('previewImg').style.display = 'none';
   document.getElementById('imgFile').value = '';
   imgData = null;
-  loadPosts();
-}
-
-function loadPosts() {
-  var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
-  var list = document.getElementById('postList');
-  if (posts.length === 0) { list.innerHTML = '<div class="empty">暂无动态</div>'; return; }
-  list.innerHTML = posts.map(function(p, pi) {
-    var imgHtml = p.image ? '<img class="post-img" src="' + p.image + '">' : '';
-    var commentsHtml = (p.comments || []).map(function(c) {
-      return '<div class="comment"><span class="c-author">' + displayAuthor(c.authorId, c.authorName) + '</span><span class="c-text">' + c.text + '</span></div>';
-    }).join('');
-    return '<div class="post-item"><div class="author">' + displayAuthor(p.authorId, p.authorName) + '</div><div class="content">' + (p.text || '') + '</div>' + imgHtml + '<div class="time"><span>' + fmtTime(p.time) + '</span><span class="comment-btn" onclick="toggleComment(' + pi + ')">评论 (' + (p.comments||[]).length + ')</span></div><div class="comments" id="comments-' + pi + '" style="display:none">' + commentsHtml + '<div class="comment-input"><input id="cin-' + pi + '" placeholder="写评论..."><button onclick="addComment(' + pi + ')">发送</button></div></div></div>';
-  }).join('');
+  await saveData();
+  renderAll();
 }
 
 function toggleComment(pi) {
@@ -205,16 +232,15 @@ function toggleComment(pi) {
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
-function addComment(pi) {
+async function addComment(pi) {
   var inp = document.getElementById('cin-' + pi);
   var text = inp.value.trim();
   if (!text) return;
-  var posts = JSON.parse(localStorage.getItem('jhx_posts') || '[]');
-  if (!posts[pi].comments) posts[pi].comments = [];
-  posts[pi].comments.push({ authorId: id, authorName: name || '用户'+id, text: text });
-  localStorage.setItem('jhx_posts', JSON.stringify(posts));
+  if (!dataCache.posts[pi].comments) dataCache.posts[pi].comments = [];
+  dataCache.posts[pi].comments.push({ authorId: id, authorName: name||'用户'+id, text: text });
   inp.value = '';
-  loadPosts();
+  await saveData();
+  renderAll();
   document.getElementById('comments-' + pi).style.display = 'block';
 }
 </script>
