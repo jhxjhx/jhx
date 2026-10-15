@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#121214">
 <link rel="manifest" href="manifest.json">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>我的音乐主页 - 蒋昊熹</title>
+<title>我的音乐主页 · 75.444</title>
 <style>
 :root {
   --bg: #121214;
@@ -305,6 +305,8 @@ body {
 input#avatarUpload { display: none; }
 
 </style>
+<meta name="application-name" content="75.444">
+<meta name="apple-mobile-web-app-title" content="75.444">
 </head>
 <body>
 
@@ -320,10 +322,9 @@ input#avatarUpload { display: none; }
 
 <!-- Profile Header -->
 <div class="profile-header">
-  <input type="file" id="avatarUpload" accept="image/*" onchange="changeAvatar(event)">
-  <div class="profile-avatar" id="profileAvatar" style="background: url(avatar.jpg) center/cover;" onclick="document.getElementById('avatarUpload').click()"></div>
+  <div class="profile-avatar" id="profileAvatar" style="background: url(avatar.jpg) center/cover;" onclick="location.href='login.html'"></div>
   <div class="profile-info">
-    <h2 id="profileName" onclick="editName()">lonnybreauxxx</h2>
+    <h2 id="profileName" onclick="location.href='login.html'">lonnybreauxxx</h2>
     <div class="profile-bio" id="profileIdDisplay"></div>
   </div>
 </div>
@@ -464,44 +465,8 @@ function closeModal(e) {
 </script>
 
 
-<script>
-// Load saved profile
-(function() {
-  var savedName = localStorage.getItem('jhx_name') || '用户' + (localStorage.getItem('jhx_id') || '');
-  var savedAvatar = localStorage.getItem('jhx_avatar');
-  if (savedName) document.getElementById('profileName').textContent = savedName;
-  if (savedAvatar) document.getElementById('profileAvatar').style.backgroundImage = 'url(' + savedAvatar + ')';
-})();
 
-function changeAvatar(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var dataUrl = ev.target.result;
-    document.getElementById('profileAvatar').style.backgroundImage = 'url(' + dataUrl + ')';
-    localStorage.setItem('jhx_avatar', dataUrl);
-  };
-  reader.readAsDataURL(file);
-}
 
-function editName() {
-  var el = document.getElementById('profileName');
-  var old = el.textContent;
-  el.innerHTML = '<input id="nameInput" value="' + old + '" style="background:var(--bg-card);border:1px solid var(--text-secondary);color:var(--text);font-size:24px;font-weight:800;padding:4px 8px;border-radius:8px;width:100%;" onblur="saveName()" onkeydown="if(event.key==='Enter')this.blur()">';
-  document.getElementById('nameInput').focus();
-}
-
-function saveName() {
-  var input = document.getElementById('nameInput');
-  if (!input) return;
-  var name = input.value.trim() || 'lonnybreauxxx';
-  document.getElementById('profileName').textContent = name;
-    var id = localStorage.getItem('jhx_id');
-    if (id) document.getElementById('profileIdDisplay').textContent = 'ID: ' + id;
-  localStorage.setItem('jhx_name', name);
-}
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="cloud-config.js"></script><script src="cloud.js"></script><script src="cloud-profile.js"></script>
 </body>
 </html>

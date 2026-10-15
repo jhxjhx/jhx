@@ -1,6 +1,6 @@
 {
-  "name": "我",
-  "short_name": "我",
+  "name": "75.444",
+  "short_name": "75.444",
   "description": "个人音乐收藏与推荐",
   "start_url": "/jhx/",
   "scope": "/jhx/",
@@ -9,7 +9,15 @@
   "theme_color": "#121214",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }

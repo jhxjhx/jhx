@@ -1,124 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#121214">
-<link rel="manifest" href="manifest.json">
-<title>登录</title>
-<style>
-:root { --bg: #121214; --bg-card: #1c1c1e; --text: #f5f5f7; --text-secondary: #98989d; --accent: #fc3c44; --radius: 14px; }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
-.back-bar { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
-.back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
-.back-btn svg { width: 20px; height: 20px; }
-.container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 24px; }
-.avatar { width: 80px; height: 80px; border-radius: 50%; background: url(avatar.jpg) center/cover; box-shadow: 0 4px 20px rgba(252,60,68,0.3); margin-bottom: 24px; }
-.title { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
-.subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; }
-.form { width: 100%; max-width: 320px; }
-.input-group { margin-bottom: 16px; }
-.input-group input { width: 100%; padding: 14px 16px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); color: var(--text); font-size: 15px; font-family: inherit; outline: none; }
-.input-group input:focus { border-color: var(--accent); }
-.input-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; margin-left: 4px; }
-.btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; }
-.btn-primary { background: var(--accent); color: #fff; margin-top: 8px; }
-.btn-outline { background: transparent; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.15); margin-top: 12px; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.msg { margin-top: 12px; font-size: 13px; text-align: center; min-height: 20px; }
-.msg.error { color: #ff4d4f; } .msg.success { color: #52c41a; }
-.user-card { margin-top: 24px; text-align: center; display: none; }
-</style>
-</head>
-<body>
-<div class="back-bar">
-  <button class="back-btn" onclick="location.href='index.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-</div>
-<div class="container">
-  <div class="avatar"></div>
-  <div class="title" id="pageTitle">登录</div>
-  <div class="subtitle">6位数字ID登录</div>
-  <div class="form" id="loginForm">
-    <div class="input-group"><label>6位数字ID</label><input type="text" id="uid" placeholder="请输入6位数字ID" maxlength="6" inputmode="numeric"></div>
-    <div class="input-group"><label>密码</label><input type="password" id="password" placeholder="请输入密码(至少4位)"></div>
-    <div class="input-group" id="extraGroup" style="display:none"><label>确认密码</label><input type="password" id="password2" placeholder="再次输入密码"></div>
-    <button class="btn btn-primary" id="submitBtn" onclick="doAuth()">登录</button>
-    <button class="btn btn-outline" id="switchBtn" onclick="toggleMode()">没有账号？去注册</button>
-    <div class="msg" id="msg"></div>
-  </div>
-  <div class="user-card" id="userCard">
-    <div style="font-size:16px;font-weight:600;" id="userInfo"></div>
-    <button class="btn btn-outline" style="margin-top:16px;width:auto;padding:10px 24px;" onclick="logout()">退出登录</button>
-  </div>
-</div>
-
-<script>
-var isReg = false;
-
-(function() {
-  var id = localStorage.getItem('jhx_id');
-  if (id) showLoggedIn(id);
-})();
-
-function h(p) { var x = 0; for (var i = 0; i < p.length; i++) { x = ((x << 5) - x) + p.charCodeAt(i); x |= 0; } return Math.abs(x).toString(16); }
-
-function toggleMode() {
-  isReg = !isReg;
-  document.getElementById('pageTitle').textContent = isReg ? '注册' : '登录';
-  document.getElementById('submitBtn').textContent = isReg ? '注册' : '登录';
-  document.getElementById('switchBtn').textContent = isReg ? '已有账号？去登录' : '没有账号？去注册';
-  document.getElementById('extraGroup').style.display = isReg ? '' : 'none';
-  showMsg('');
-}
-
-function showMsg(t, type) {
-  var m = document.getElementById('msg');
-  m.textContent = t; m.className = 'msg ' + (type || '');
-}
-
-function doAuth() {
-  var uid = document.getElementById('uid').value.trim();
-  var pass = document.getElementById('password').value;
-  var btn = document.getElementById('submitBtn');
-  if (!/^\d{6}$/.test(uid)) { showMsg('ID必须是6位数字', 'error'); return; }
-  if (!pass || pass.length < 4) { showMsg('密码至少4位', 'error'); return; }
-  if (isReg && pass !== document.getElementById('password2').value) { showMsg('两次密码不一致', 'error'); return; }
-
-  btn.disabled = true;
-
-  var store = JSON.parse(localStorage.getItem('jhx_users') || '{}');
-  var hp = h(pass + uid);
-
-  if (isReg) {
-    if (store[uid]) { showMsg('该ID已注册', 'error'); btn.disabled = false; return; }
-    store[uid] = { pass: hp, name: '用户' + uid };
-    localStorage.setItem('jhx_users', JSON.stringify(store));
-  } else {
-    if (!store[uid]) { showMsg('ID不存在，请先注册', 'error'); btn.disabled = false; return; }
-    if (store[uid].pass !== hp) { showMsg('密码错误', 'error'); btn.disabled = false; return; }
-  }
-
-  localStorage.setItem('jhx_id', uid);
-  localStorage.setItem('jhx_name', store[uid].name || '用户' + uid);
-  showMsg(isReg ? '注册成功！' : '登录成功！', 'success');
-  showLoggedIn(uid);
-}
-
-function showLoggedIn(uid) {
-  document.getElementById('loginForm').style.display = 'none';
-  document.getElementById('userCard').style.display = 'block';
-  document.getElementById('userInfo').textContent = 'ID: ' + uid;
-}
-
-function logout() {
-  localStorage.removeItem('jhx_id');
-  document.getElementById('loginForm').style.display = '';
-  document.getElementById('userCard').style.display = 'none';
-  showMsg('已退出', 'success');
-}
-</script>
-</body>
-</html>
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#121214"><title>登录 · 75.444</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="cloud.css"><meta name="application-name" content="75.444">
+<meta name="apple-mobile-web-app-title" content="75.444">
+</head><body><main><header><a href="index.html">← 首页</a><h1 id="pageTitle">登录</h1></header>
+<p class="hint">邮箱注册，资料跨设备同步。旧的六位 ID 账号需重新注册。</p>
+<form id="authForm">
+ <label id="nicknameGroup" hidden>昵称<input id="nickname" maxlength="30" autocomplete="nickname"></label>
+ <label id="emailGroup">邮箱<input id="email" type="email" autocomplete="email" required></label>
+ <label id="passwordGroup">密码<input id="password" type="password" minlength="8" maxlength="128" autocomplete="current-password" required></label>
+ <button class="primary" id="submitBtn" type="submit">登录</button>
+ <nav><button type="button" data-mode="register">注册账号</button><button type="button" data-mode="login">返回登录</button><button type="button" data-mode="reset">忘记密码</button></nav>
+</form>
+<section id="account" hidden>
+ <h2 id="userInfo"></h2><img id="avatarPreview" alt="头像">
+ <label>头像（JPG / PNG / WebP，最多 2MB）<input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp"></label>
+ <label>昵称<input id="nicknameEdit" maxlength="30"></label>
+ <label>简介<textarea id="bio" maxlength="200"></textarea></label>
+ <nav><button id="saveProfile" class="primary">保存资料</button><a href="community.html">进入社区</a><button id="logout">退出此设备</button></nav>
+</section><p id="msg" role="status" aria-live="polite"></p>
+</main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="cloud-config.js"></script><script src="cloud.js"></script><script src="account.js"></script></body></html>
